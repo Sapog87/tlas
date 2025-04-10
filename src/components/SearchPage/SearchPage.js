@@ -353,7 +353,7 @@ function SearchPage({}) {
                 } else if (loading) {
                     return (
                         <div className="relative flex pt-2 justify-center">
-                            <img src="loading.gif" alt="Loading..." width="75px" height="75px"/>
+                            <img src={process.env.PUBLIC_URL + "/loading.gif"} alt="Loading..." width="75px" height="75px"/>
                         </div>
                     )
                 } else {
