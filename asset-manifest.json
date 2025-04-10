@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/travel_logistics_analytics_service_frontend_react/static/css/main.fc382462.css",
-    "main.js": "/travel_logistics_analytics_service_frontend_react/static/js/main.bc2f02ca.js",
-    "static/js/453.c8c7073c.chunk.js": "/travel_logistics_analytics_service_frontend_react/static/js/453.c8c7073c.chunk.js",
-    "index.html": "/travel_logistics_analytics_service_frontend_react/index.html",
-    "main.fc382462.css.map": "/travel_logistics_analytics_service_frontend_react/static/css/main.fc382462.css.map",
-    "main.bc2f02ca.js.map": "/travel_logistics_analytics_service_frontend_react/static/js/main.bc2f02ca.js.map",
-    "453.c8c7073c.chunk.js.map": "/travel_logistics_analytics_service_frontend_react/static/js/453.c8c7073c.chunk.js.map"
+    "main.css": "/tlas/static/css/main.fc382462.css",
+    "main.js": "/tlas/static/js/main.bda2218c.js",
+    "static/js/453.c8c7073c.chunk.js": "/tlas/static/js/453.c8c7073c.chunk.js",
+    "index.html": "/tlas/index.html",
+    "main.fc382462.css.map": "/tlas/static/css/main.fc382462.css.map",
+    "main.bda2218c.js.map": "/tlas/static/js/main.bda2218c.js.map",
+    "453.c8c7073c.chunk.js.map": "/tlas/static/js/453.c8c7073c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.fc382462.css",
-    "static/js/main.bc2f02ca.js"
+    "static/js/main.bda2218c.js"
   ]
 }
