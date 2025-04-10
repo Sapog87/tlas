@@ -1,29 +1,27 @@
-import './Criteria.css'
-import React, { useState } from 'react';
+import React from 'react';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 
-function JourneyTime({ criteria }) {
-    const [timeRange, setTimeRange] = useState(criteria);
-
-    const handleSliderChange = (value) => {
-        if (value[0] !== value[1]) {
-            setTimeRange(value);
-        }
-    };
-
+function JourneyTime({
+                         minJourneyTimeRange,
+                         maxJourneyTimeRange,
+                         journeyTimeRange,
+                         handleJourneyTimeRangeSliderChange
+                     }) {
     return (
-        <div className='TransferTimeRangeSlider'>
-            <p>Диапазон: {timeRange[0]}ч - {timeRange[1]}ч</p>
+        <div className="p-2 ">
+            <div className="mb-2 flex justify-between">
+                <div>{journeyTimeRange[0]}ч</div>
+                <div>{journeyTimeRange[1]}ч</div>
+            </div>
             <Slider
                 range
-                min={criteria[0]}
-                max={criteria[1]}
+                min={minJourneyTimeRange}
+                max={maxJourneyTimeRange}
                 step={1}
-                value={timeRange}
-                onChange={handleSliderChange}
-                marks={{
-                }}
+                value={journeyTimeRange}
+                onChange={handleJourneyTimeRangeSliderChange}
+                marks={{}}
                 allowCross={false}
             />
         </div>

@@ -1,47 +1,44 @@
-import React, { useState, useEffect } from 'react';
-import './Criteria.css'
+import React from 'react';
 
-const TransportSelector = ({ criteria }) => {
-    const [selectedTransports, setSelectedTransports] = useState({});
-
-    useEffect(() => {
-        const initialState = criteria.reduce((acc, value) => {
-            acc[value] = selectedTransports[value] ?? true;
-            return acc;
-        }, {});
-        setSelectedTransports(initialState);
-    }, [criteria]);
-
-    const handleCheckboxChange = (event) => {
-        const { name, checked } = event.target;
-
-        if (!checked && Object.values(selectedTransports).filter(Boolean).length === 1) {
-            return;
-        }
-
-        setSelectedTransports((prevState) => ({
-            ...prevState,
-            [name]: checked,
-        }));
-    };
-
+const TransportSelector = ({
+                               selectedTransport,
+                               handleSelectedTransportCheckboxChange
+                           }) => {
     return (
-        <div>
-            {Object.keys(selectedTransports).map((key) => (
-                <div>
-                    <label key={key}>
-                        <input
-                            className="TransportCheckBox"
-                            type="checkbox"
-                            name={key}
-                            checked={!!selectedTransports[key]}
-                            onChange={handleCheckboxChange}
-                        />
-                        {key}
-                    </label>
-                    <br />
-                </div>
-            ))}
+        <div className="p-2">
+            <div className="p-1">
+                {Object.keys(selectedTransport).map((key) => (
+                    <div>
+                        <label className="flex" key={key}>
+                            <input
+                                className="accent-[#96dbfa] mr-2"
+                                type="checkbox"
+                                name={key}
+                                checked={!!selectedTransport[key]}
+                                onChange={handleSelectedTransportCheckboxChange}
+                            />
+                            {(() => {
+                                let name;
+                                switch (key) {
+                                    case "TRAIN":
+                                        name = "Поезд";
+                                        break;
+                                    case "PLANE":
+                                        name = "Самолет";
+                                        break;
+                                    default:
+                                        name = key;
+                                        break;
+                                }
+
+                                return (
+                                    <div>{name}</div>
+                                )
+                            })()}
+                        </label>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };
