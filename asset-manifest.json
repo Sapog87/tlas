@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/travel_logistics_analytics_service_frontend_react/static/css/main.fc382462.css",
-    "main.js": "/travel_logistics_analytics_service_frontend_react/static/js/main.5680eb7a.js",
+    "main.js": "/travel_logistics_analytics_service_frontend_react/static/js/main.bc2f02ca.js",
     "static/js/453.c8c7073c.chunk.js": "/travel_logistics_analytics_service_frontend_react/static/js/453.c8c7073c.chunk.js",
     "index.html": "/travel_logistics_analytics_service_frontend_react/index.html",
     "main.fc382462.css.map": "/travel_logistics_analytics_service_frontend_react/static/css/main.fc382462.css.map",
-    "main.5680eb7a.js.map": "/travel_logistics_analytics_service_frontend_react/static/js/main.5680eb7a.js.map",
+    "main.bc2f02ca.js.map": "/travel_logistics_analytics_service_frontend_react/static/js/main.bc2f02ca.js.map",
     "453.c8c7073c.chunk.js.map": "/travel_logistics_analytics_service_frontend_react/static/js/453.c8c7073c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.fc382462.css",
-    "static/js/main.5680eb7a.js"
+    "static/js/main.bc2f02ca.js"
   ]
 }
