@@ -44,7 +44,7 @@ const TransferAmountSelector = ({
                                 }
 
                                 return (
-                                    <div>{name}</div>
+                                    <div className="select-none">{name}</div>
                                 )
                             })()}
                         </label>

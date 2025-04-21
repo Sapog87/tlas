@@ -5,6 +5,7 @@ import JourneyTime from './JourneyTime';
 import Price from "./Price";
 import TransportSelector from "./TransportSelector";
 import Time from "./Time";
+import Carrier from "./Carrier";
 
 function Criteria({
                       minTransferTimeRange,
@@ -26,7 +27,9 @@ function Criteria({
                       departureTimeRange,
                       handleDepartureRangeSliderChange,
                       arrivalTimeRange,
-                      handleArrivalRangeSliderChange
+                      handleArrivalRangeSliderChange,
+                      selectedCarrier,
+                      handleSelectedCarrierCheckboxChange
                   }) {
     return (
         <div className="w-[20%] max-w-[300px] min-w-[250px]">
@@ -81,6 +84,17 @@ function Criteria({
                         maxPrice={maxPrice}
                         priceRange={priceRange}
                         handlePriceRangeSliderChange={handlePriceRangeSliderChange}
+                    />
+                </div>
+            }
+
+            {selectedCarrier &&
+                <div className="bg-white rounded-[20px] mb-4 px-4 pt-[5px] pb-[15px] shadow-[5px_5px_5px_#d4d4d4]">
+                    <h4 className="p-2">Перевозчики</h4>
+                    <hr className="text-[#f0f0f0]"></hr>
+                    <Carrier
+                        selectedCarrier={selectedCarrier}
+                        handleSelectedCarrierCheckboxChange={handleSelectedCarrierCheckboxChange}
                     />
                 </div>
             }

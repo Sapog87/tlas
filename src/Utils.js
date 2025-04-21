@@ -1,14 +1,26 @@
+const options = {
+    day: 'numeric',
+    month: 'short',
+    hour: 'numeric',
+    minute: 'numeric',
+};
+
 export const formatDate = (isoDate) => {
     const date = new Date(isoDate);
 
-    const options = {
-        day: 'numeric',
-        month: 'short',
-        hour: 'numeric',
-        minute: 'numeric',
-    };
+    return new Intl.DateTimeFormat('ru-RU', {
+        ...options,
+        timeZone: 'Europe/Moscow'
+    }).format(date).replace(',', '');
+};
 
-    return new Intl.DateTimeFormat('ru-RU', options).format(date).replace(',', '');
+export const formatDateWithoutOffset = (isoDate) => {
+    const date = new Date(isoDate.split('+')[0]);
+
+    return new Intl.DateTimeFormat('ru-RU', {
+        ...options,
+        timeZone: 'Europe/Moscow'
+    }).format(date).replace(',', '');
 };
 
 export const calculateTimeDifferenceFormated = (isoDate1, isoDate2) => {
@@ -43,13 +55,11 @@ export const getTransferTimes = (route) => {
 
     if (!segments || segments.length <= 1) {
         return {
-            min: null,
-            max: null
+            time: null,
         };
     }
 
-    let minTransfer = Infinity;
-    let maxTransfer = -Infinity;
+    let time = 0;
 
     for (let i = 1; i < segments.length; i++) {
         const prevFinish = new Date(segments[i - 1].finishDateTime);
@@ -57,13 +67,11 @@ export const getTransferTimes = (route) => {
 
         const transferTime = (nextStart - prevFinish) / (1000);
 
-        minTransfer = Math.min(minTransfer, transferTime);
-        maxTransfer = Math.max(maxTransfer, transferTime);
+        time = time + transferTime;
     }
 
     return {
-        min: minTransfer,
-        max: maxTransfer
+        time: time
     };
 };
 
@@ -82,14 +90,22 @@ export const calculateMinMaxPrice = (route) => {
 
     for (const segment of route.segments) {
         const prices = segment.products.map(p => p.priceInKopecks);
-        minTotal += Math.min(...prices);
-        maxTotal += Math.max(...prices);
+        if (prices.length !== 0) {
+            minTotal += Math.min(...prices);
+            maxTotal += Math.max(...prices);
+        }
+    }
 
+    if (minTotal === 0) {
+        return {
+            min: null,
+            max: null
+        }
     }
 
     return {
-        min: parseInt(minTotal) / 100,
-        max: parseInt(maxTotal) / 100
+        min: minTotal / 100,
+        max: maxTotal / 100
     };
 }
 
@@ -106,3 +122,43 @@ export const getTransportTypes = (route) => {
 
     return transportTypes;
 };
+
+export const getCarriers = (route) => {
+    const carriers = new Set();
+
+    if (route.segments && Array.isArray(route.segments)) {
+        for (const segment of route.segments) {
+            if (segment.carrier) {
+                carriers.add(segment.carrier);
+            }
+        }
+    }
+
+    return carriers;
+};
+
+export const getCarType = (type) => {
+    switch (type) {
+        case "COMPARTMENT":
+            return  "купе";
+        case "RESERVED_SEAT":
+            return "плацкарт";
+        case "LUXURY":
+            return "СВ";
+        case "SOFT":
+            return "люкс";
+        case "SEDENTARY":
+            return "сидячие";
+        default:
+            return type
+    }
+}
+
+export const getPlaceType = (type) => {
+    if (type.toLowerCase().includes("upper")) return "Верхнее"
+    else if (type.toLowerCase().includes("lower")) return "Нижнее"
+    else {
+        console.debug(type)
+        return null
+    }
+}

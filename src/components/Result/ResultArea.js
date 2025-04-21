@@ -1,13 +1,20 @@
-import React from 'react';
-import {calculateTimeDifferenceFormated, formatDate} from "../../Utils";
+import React, {useState} from 'react';
 import Route from "./Route";
 import Transfer from "./Transfer";
 import TrainIcon from "../Icon/TrainIcon";
 import PlaneIcon from "../Icon/PlaneIcon";
+import SuburbanIcon from "../Icon/SuburbanIcon";
+import {motion} from "framer-motion";
+import Ticket from "./Ticket";
+import {calculateTimeDifferenceFormated, formatDateWithoutOffset} from "../../Utils";
 
 function ResultArea({data}) {
+    const [showModal, setShowModal] = useState(false);
+    const [request, setRequest] = useState({});
+    const [trainData, setTrainData] = useState({});
+
     return (
-        <div>
+        <div className="cursor-default">
             {!data || data.length === 0 && (
                 <div className="bg-white rounded-[20px] mb-8 p-2.5 shadow-[10px_10px_10px_#d4d4d4]">
                     <div className="relative flex justify-center py-10">
@@ -36,131 +43,162 @@ function ResultArea({data}) {
                     </div>
                 </div>
             )}
-            {data.length > 0 && data.map((item) => (
-                <div className="bg-white rounded-[20px] mb-8 p-2.5 shadow-[10px_10px_10px_#d4d4d4]">
-                    <div className="p-2.5">
-                        {(() => {
-                            if (item.segments.length > 1) {
-                                return (
-                                    <table className="w-full align-top">
-                                        <tbody>
-                                        <tr className="flex">
-                                            <td className="w-[30%] p-2.5 align-top">
-                                                <div className="flex flex-wrap">
-                                                    {item.segments.map(segment => {
-                                                        if (segment.transport === "TRAIN") {
-                                                            return (
-                                                                <div
-                                                                    className="bg-[#e4e4e4] p-1 m-1 rounded-[5px] shadow-inner">
-                                                                    <TrainIcon/>
-                                                                </div>
-                                                            )
-                                                        } else if (segment.transport === "PLANE") {
-                                                            return (
-                                                                <div
-                                                                    className="bg-[#e4e4e4] p-1 m-1 rounded-[5px] shadow-inner">
-                                                                    <PlaneIcon/>
-                                                                </div>
-                                                            )
-                                                        }
-                                                    })}
-                                                </div>
-                                            </td>
-                                            <td className="w-[10%] p-2.5 align-top">
-                                                <div>
-                                                    {(() => {
-                                                        const dt = formatDate(item.startDateTime).split(' ')
-                                                        return (
-                                                            <div>
-                                                                <div className="text-xs">{dt[0]} {dt[1]}</div>
-                                                                <div className="font-bold">{dt[2]}</div>
-                                                            </div>
-                                                        )
-                                                    })()}
-                                                </div>
-                                                <span/>
-                                                <div className="text-xs">
-                                                    {item.startLocation}
-                                                </div>
-                                            </td>
-                                            <td className="w-[15%] p-2.5">
-                                                <div className="text-[#a5a5a5] text-center">
-                                                    {calculateTimeDifferenceFormated(item.startDateTime, item.finishDateTime)}
-                                                </div>
-                                            </td>
-                                            <td className="w-[10%] p-2.5">
-                                                <div>
-                                                    {(() => {
-                                                        const dt = formatDate(item.finishDateTime).split(' ')
-                                                        return (
-                                                            <div>
-                                                                <div className="text-xs">{dt[0]} {dt[1]}</div>
-                                                                <div className="font-bold">{dt[2]}</div>
-                                                            </div>
-                                                        )
-                                                    })()}
-                                                </div>
-                                                <span/>
-                                                <div className="text-xs">
-                                                    {item.finishLocation}
-                                                </div>
-                                            </td>
-                                            <td className="w-[35%] p-2.5 align-top">
-                                                <div
-                                                    className="bg-gray-200 flex justify-between shadow-inner m-1 p-1 rounded-[5px]">
-                                                    <div className="text-[13px]">
-                                                        стоимость
+            {data && data.length > 0 && data.map((item) => (
+                <motion.div
+                    initial={{opacity: 0, y: 20}} // начальное состояние (скрыт и немного снизу)
+                    animate={{opacity: 1, y: 0}}  // конечное состояние (показан и на месте)
+                    transition={{duration: 0.5}}  // длительность анимации
+                >
+                    <div className="bg-white rounded-[20px] mb-8 p-2.5 shadow-[10px_10px_10px_#d4d4d4]">
+                        <div className="p-2.5">
+                            {(() => {
+                                if (item.segments.length > 1) {
+                                    return (
+                                        <table className="w-full align-top">
+                                            <tbody>
+                                            <tr className="flex">
+                                                <td className="w-[30%] p-2.5 align-top">
+                                                    <div className="flex flex-wrap">
+                                                        {item.segments.map(segment => {
+                                                            if (segment.transport === "TRAIN") {
+                                                                return (
+                                                                    <div
+                                                                        className="bg-[#e4e4e4] p-1 m-1 rounded-[5px] shadow-inner">
+                                                                        <TrainIcon/>
+                                                                    </div>
+                                                                )
+                                                            } else if (segment.transport === "PLANE") {
+                                                                return (
+                                                                    <div
+                                                                        className="bg-[#e4e4e4] p-1 m-1 rounded-[5px] shadow-inner">
+                                                                        <PlaneIcon/>
+                                                                    </div>
+                                                                )
+                                                            } else if (segment.transport === "SUBURBAN") {
+                                                                return (
+                                                                    <div
+                                                                        className="bg-[#e4e4e4] p-1 m-1 rounded-[5px] shadow-inner">
+                                                                        <SuburbanIcon/>
+                                                                    </div>
+                                                                )
+                                                            }
+                                                        })}
                                                     </div>
-                                                    <div className="text-[14px] font-bold">
-                                                        от {item.minPrice}₽
+                                                </td>
+                                                <td className="w-[35%] p-2.5 align-top">
+                                                    <div>
+                                                        <div className="flex justify-between">
+                                                            <div className="text-left">
+                                                                {(() => {
+                                                                    const dt = formatDateWithoutOffset(item.startDateTime).split(' ')
+                                                                    return (
+                                                                        <div>
+                                                                            <div
+                                                                                className="text-xs">{dt[0]} {dt[1]}</div>
+                                                                            <div className="font-bold">{dt[2]}</div>
+                                                                        </div>
+                                                                    )
+                                                                })()}
+                                                            </div>
+                                                            <div className="text-[#a5a5a5] text-center">
+                                                                {calculateTimeDifferenceFormated(item.startDateTime, item.finishDateTime)}
+                                                            </div>
+                                                            <div className="text-right">
+                                                                {(() => {
+                                                                    const dt = formatDateWithoutOffset(item.finishDateTime).split(' ')
+                                                                    return (
+                                                                        <div>
+                                                                            <div
+                                                                                className="text-xs">{dt[0]} {dt[1]}</div>
+                                                                            <div className="font-bold">{dt[2]}</div>
+                                                                        </div>
+                                                                    )
+                                                                })()}
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex justify-between gap-[50px]">
+                                                            <div className="text-xs">
+                                                                {item.startLocation}
+                                                            </div>
+                                                            <div className="text-xs text-right">
+                                                                {item.finishLocation}
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                )
-                            }
-                        })()}
-                    </div>
-                    <div>
-                        {item.segments.map((segment, index) => {
-                            const nextSegment = item.segments[index + 1];
-                            const currentRoute = (
-                                <Route
-                                    transport={segment.transport}
-                                    raceNumber={segment.raceNumber}
-                                    carrier={segment.carrier}
-                                    startDateTime={segment.startDateTime}
-                                    startStation={segment.startStation}
-                                    startCity={segment.startCity}
-                                    finishDateTime={segment.finishDateTime}
-                                    finishStation={segment.finishStation}
-                                    finishCity={segment.finishCity}
-                                    products={segment.products}
-                                />
-                            );
-
-                            const transfer =
-                                nextSegment && (
-                                    <Transfer
-                                        startStation={segment.finishStation}
-                                        finishStation={nextSegment.startStation}
-                                        startDateTime={segment.finishDateTime}
-                                        finishDateTime={nextSegment.startDateTime}
+                                                </td>
+                                                <td className="w-[35%] p-2.5 align-top">
+                                                    {item.minPrice && <div
+                                                        className="bg-gray-200 flex justify-between shadow-inner m-1 p-1 rounded-[5px]">
+                                                        <div className="text-[13px]">
+                                                            стоимость
+                                                        </div>
+                                                        <div className="text-[14px] font-bold">
+                                                            от {item.minPrice}₽
+                                                        </div>
+                                                    </div>}
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    )
+                                }
+                            })()}
+                        </div>
+                        <div>
+                            {item.segments.map((segment, index) => {
+                                const nextSegment = item.segments[index + 1];
+                                const currentRoute = (
+                                    <Route
+                                        transport={segment.transport}
+                                        raceNumber={segment.raceNumber}
+                                        carrier={segment.carrier}
+                                        startDateTime={segment.startDateTime}
+                                        startStation={segment.startStation}
+                                        startCity={segment.startCity}
+                                        finishDateTime={segment.finishDateTime}
+                                        finishStation={segment.finishStation}
+                                        finishCity={segment.finishCity}
+                                        products={segment.products}
+                                        vehicle={segment.vehicle}
+                                        setShowModal={setShowModal}
+                                        setRequest={setRequest}
+                                        setTrainData={setTrainData}
+                                        originCode={segment.originCode}
+                                        destinationCode={segment.destinationCode}
                                     />
                                 );
 
-                            return (
-                                <div>
-                                    {currentRoute}
-                                    {transfer}
-                                </div>
-                            );
-                        })}
+                                const transfer =
+                                    nextSegment && (
+                                        <Transfer
+                                            startStation={segment.finishStation}
+                                            finishStation={nextSegment.startStation}
+                                            startDateTime={segment.finishDateTime}
+                                            finishDateTime={nextSegment.startDateTime}
+                                            fromTransport={segment.transport}
+                                            toTransport={nextSegment.transport}
+                                        />
+                                    );
+
+                                return (
+                                    <div>
+                                        {currentRoute}
+                                        {transfer}
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
-                </div>
+                </motion.div>
             ))}
+            {showModal &&
+                <Ticket
+                    showModal={showModal}
+                    setShowModal={setShowModal}
+                    request={request}
+                    trainData={trainData}
+                />
+            }
         </div>
     );
 }

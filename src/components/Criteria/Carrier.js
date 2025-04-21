@@ -1,21 +1,21 @@
 import React from 'react';
 
-const TransportSelector = ({
-                               selectedTransport,
-                               handleSelectedTransportCheckboxChange
+const Carrier = ({
+                               selectedCarrier,
+                               handleSelectedCarrierCheckboxChange
                            }) => {
     return (
         <div className="p-2">
             <div className="p-1">
-                {Object.keys(selectedTransport).map((key) => (
+                {Object.keys(selectedCarrier).map((key) => (
                     <div>
                         <label className="flex" key={key}>
                             <input
                                 className="accent-[#96dbfa] mr-2"
                                 type="checkbox"
                                 name={key}
-                                checked={!!selectedTransport[key]}
-                                onChange={handleSelectedTransportCheckboxChange}
+                                checked={!!selectedCarrier[key]}
+                                onChange={handleSelectedCarrierCheckboxChange}
                             />
                             {(() => {
                                 let name;
@@ -46,4 +46,4 @@ const TransportSelector = ({
     );
 };
 
-export default TransportSelector;
+export default Carrier;

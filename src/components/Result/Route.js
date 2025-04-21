@@ -1,7 +1,8 @@
 import React from 'react';
-import {calculateTimeDifferenceFormated, formatDate} from '../../Utils';
+import {calculateTimeDifferenceFormated, formatDate, formatDateWithoutOffset, getCarType} from '../../Utils';
 import TrainIcon from "../Icon/TrainIcon";
 import PlaneIcon from "../Icon/PlaneIcon";
+import SuburbanIcon from "../Icon/SuburbanIcon";
 
 function Route({
                    transport,
@@ -13,14 +14,44 @@ function Route({
                    finishStation,
                    startCity,
                    finishCity,
-                   products
+                   products,
+                   vehicle,
+                   setShowModal,
+                   setRequest,
+                   setTrainData,
+                   originCode,
+                   destinationCode,
                }) {
     return (
-        <div className="bg-[#e4e4e4] shadow-inner p-2.5 rounded-[10px] mb-2.5">
+        <div
+            className={`bg-[#e4e4e4] shadow-inner p-2.5 rounded-[10px] mb-2.5 ${products && products.length > 0 ? 'cursor-pointer' : ''}`}
+            onClick={() => {
+                if (transport === "TRAIN") {
+                    setShowModal(true)
+                    setRequest({
+                        "origin": originCode,
+                        "destination": destinationCode,
+                        "date": startDateTime,
+                        "train": raceNumber
+                    });
+                    setTrainData({
+                        raceNumber,
+                        carrier,
+                        startDateTime,
+                        finishDateTime,
+                        startStation,
+                        finishStation,
+                        startCity,
+                        finishCity,
+                        vehicle
+                    });
+                }
+            }}
+        >
             <table className="w-full">
                 <tbody>
                 <tr className="flex">
-                    <td className="w-[30%] p-2.5 align-top">
+                    <td className="w-[30%] p-2.5 align-middle">
                         {(() => {
                             if (transport === "TRAIN") {
                                 return (
@@ -34,6 +65,12 @@ function Route({
                                         <PlaneIcon/> {raceNumber}
                                     </div>
                                 )
+                            } else if (transport === "SUBURBAN") {
+                                return (
+                                    <div className="flex">
+                                        <SuburbanIcon/> {raceNumber}
+                                    </div>
+                                )
                             }
                         })()}
                         <span/>
@@ -41,75 +78,53 @@ function Route({
                             {startCity} — {finishCity}
                         </div>
                         <div className="text-[14px] text-[#555555]">
-                            {carrier}
+                            <span>{carrier}</span> {vehicle && <span className="text-orange-800">«{vehicle}»</span>}
                         </div>
                     </td>
-                    <td className="w-[10%] p-2.5 align-top">
+                    <td className="w-[35%] p-2.5 align-top">
                         <div>
-                            <div>
-                                {(() => {
-                                    const dt = formatDate(startDateTime).split(' ')
-                                    return (
-                                        <div>
-                                            <div className="text-xs">{dt[0]} {dt[1]}</div>
-                                            <div className="font-bold">{dt[2]}</div>
-                                        </div>
-                                    )
-                                })()}
+                            <div className="flex justify-between">
+                                <div className="text-left">
+                                    {(() => {
+                                        const dt = formatDateWithoutOffset(startDateTime).split(' ')
+                                        return (
+                                            <div>
+                                                <div
+                                                    className="text-xs">{dt[0]} {dt[1]}</div>
+                                                <div className="font-bold">{dt[2]}</div>
+                                            </div>
+                                        )
+                                    })()}
+                                </div>
+                                <div className="text-[#a5a5a5] text-center">
+                                    {calculateTimeDifferenceFormated(startDateTime, finishDateTime)}
+                                </div>
+                                <div className="text-right">
+                                    {(() => {
+                                        const dt = formatDateWithoutOffset(finishDateTime).split(' ')
+                                        return (
+                                            <div>
+                                                <div
+                                                    className="text-xs">{dt[0]} {dt[1]}</div>
+                                                <div className="font-bold">{dt[2]}</div>
+                                            </div>
+                                        )
+                                    })()}
+                                </div>
                             </div>
-                            <span/>
-                            <div className="text-xs">
-                                {startStation}
-                            </div>
-                        </div>
-                    </td>
-                    <td className="w-[15%] p-2.5">
-                        <div className="text-[#888888] text-center">
-                            {calculateTimeDifferenceFormated(startDateTime, finishDateTime)}
-                        </div>
-                    </td>
-                    <td className="w-[10%] p-2.5 align-top">
-                        <div>
-                            <div>
-                                {(() => {
-                                    const dt = formatDate(finishDateTime).split(' ')
-                                    return (
-                                        <div>
-                                            <div className="text-xs">{dt[0]} {dt[1]}</div>
-                                            <div className="font-bold">{dt[2]}</div>
-                                        </div>
-                                    )
-                                })()}
-                            </div>
-                            <span/>
-                            <div className="text-xs">
-                                {finishStation}
+                            <div className="flex justify-between gap-[50px]">
+                                <div className="text-xs">
+                                    {startStation}
+                                </div>
+                                <div className="text-xs text-right">
+                                    {finishStation}
+                                </div>
                             </div>
                         </div>
                     </td>
                     <td className="w-[35%] p-2.5 align-top">
                         {products.map((item) => {
-                            let type;
-                            switch (item.type) {
-                                case "COMPARTMENT":
-                                    type = "купе";
-                                    break;
-                                case "RESERVED_SEAT":
-                                    type = "плацкарт";
-                                    break;
-                                case "LUXURY":
-                                    type = "СВ";
-                                    break;
-                                case "SOFT":
-                                    type = "люкс";
-                                    break;
-                                case "SEDENTARY":
-                                    type = "сидячие";
-                                    break;
-                                default:
-                                    break;
-                            }
-
+                            const type = getCarType(item.carType);
                             const result = type && (
                                 <div className="bg-[#d4d4d4] flex justify-between shadow-inner m-1 p-1 rounded-[5px]">
                                     <div className="text-[13px]">
@@ -132,8 +147,7 @@ function Route({
                 </tbody>
             </table>
         </div>
-    )
-        ;
+    );
 }
 
 export default Route;

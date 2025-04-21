@@ -5,7 +5,9 @@ function Transfer({
                       startStation,
                       finishStation,
                       startDateTime,
-                      finishDateTime
+                      finishDateTime,
+                      fromTransport,
+                      toTransport,
                   }) {
     return (
         <div className="rounded-[10px] mb-2.5 p-1.5">
@@ -14,15 +16,15 @@ function Transfer({
                 <tr className="flex">
                     <td className="w-[40%] p-2.5">
                         <div className="break-words text-[#a5a5a5] text-[14px]">
-                            <div className="text-[16px] flex align-middle">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            <div className="flex items-center">
+                                <svg width="20" height="20" viewBox="0 -1 20 20" fill="none"
                                      xmlns="http://www.w3.org/2000/svg">
                                     <path d="M7 10L12 15L17 10" stroke="gray" strokeWidth="2" strokeLinecap="round"
                                           strokeLinejoin="round"/>
                                     <path d="M7 5L12 10L17 5" stroke="gray" strokeWidth="2" strokeLinecap="round"
                                           strokeLinejoin="round"/>
                                 </svg>
-                                Пересадка
+                                <span className="text-[16px]">Пересадка</span>
                             </div>
                             <span>
                                 {(() => {

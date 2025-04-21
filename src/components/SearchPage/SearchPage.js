@@ -1,15 +1,29 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import Search from "../Search/Search";
 import Header from "../Header/Header";
 import Criteria from "../Criteria/Criteria";
-import {getTrains} from "../../api/RouteService";
-import {calculateMinMaxPrice, getTransferTimes, getTransportTypes, getTripDuration} from "../../Utils";
+import {getRzd, getYandex} from "../../api/RouteService";
+import {calculateMinMaxPrice, getCarriers, getTransferTimes, getTransportTypes, getTripDuration} from "../../Utils";
 import ResultArea from "../Result/ResultArea";
 import Sort from "../Criteria/Sort";
+import Footer from "../Footer/Footer";
+import ProgressBar from "../ProgressBar/ProgressBar";
+import SkeletonPlaceholder from "../../Skeleton/SkeletonPlaceholder";
 
-function SearchPage({}) {
+function SearchPage({
+                        logged,
+                        setLogged,
+                        setShowLoginModal,
+                        user
+                    }) {
+    const [to, setTo] = useState({});
+    const [from, setFrom] = useState({});
+    const [toInput, setToInput] = useState("");
+    const [fromInput, setFromInput] = useState("");
+
     const [outputReceived, setOutputReceived] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [networkError, setNetworkError] = useState(false);
     const [data, setData] = useState([]);
     const [shownData, setShownData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
@@ -34,6 +48,12 @@ function SearchPage({}) {
     const [departureTimeRange, setDepartureTimeRange] = useState([0, 24]);
     const [arrivalTimeRange, setArrivalTimeRange] = useState([0, 24]);
 
+    const [selectedTransport, setSelectedTransport] = useState({});
+
+    const [selectedCarrier, setSelectedCarrier] = useState({});
+
+    const abortControllerRef = useRef(null);
+
     const sortOptions = [
         {id: "duration", label: "Продолжительность"},
         {id: "price", label: "Цена"},
@@ -41,29 +61,67 @@ function SearchPage({}) {
         {id: "arrival", label: "Прибытие"},
     ];
 
-    const [selectedTransport, setSelectedTransport] = useState({});
-
     const handleSearchSubmit = async (from, to, date) => {
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+        }
+
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+        const signal = controller.signal;
+
         setData([])
         const formatedDate = date ? new Date(date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+        setLoading(true);
         setOutputReceived(false);
-        setLoading(true)
+        setNetworkError(false);
+        setSelectedTransport({})
+        setSelectedTransfers({})
+
         try {
-            getTrains(from, to, formatedDate)
-                .then(response => {
-                    if (response.status === 200) {
-                        return response.json()
-                    } else {
-                        console.log(response);
-                        return []
-                    }
-                })
-                .then(data => {
-                    setData(prev => [...prev, ...data]);
-                })
+            Promise.all(
+                [
+                    getRzd(from, to, formatedDate, signal)
+                        .then(response => {
+                            if (response.status === 200) {
+                                return response.json()
+                            } else {
+                                return []
+                            }
+                        })
+                        .then(data => {
+                            setData(prev => [...prev, ...data]);
+                        })
+                        .catch((e) => {
+                            setNetworkError(true);
+                            console.error(e);
+                        })
+                        .finally(() => {
+                                setOutputReceived(true)
+                            }
+                        ),
+                    getYandex(from, to, formatedDate, signal)
+                        .then(response => {
+                            if (response.status === 200) {
+                                return response.json()
+                            } else {
+                                return []
+                            }
+                        })
+                        .then(data => {
+                            setData(prev => [...prev, ...data]);
+                        })
+                        .catch((e) => {
+                            setNetworkError(true);
+                            console.error(e);
+                        })
+                        .finally(() => {
+                                setOutputReceived(true)
+                            }
+                        )
+                ])
                 .finally(() => {
                     setLoading(false)
-                    setOutputReceived(true);
                 });
         } catch (error) {
             console.log(error);
@@ -84,19 +142,18 @@ function SearchPage({}) {
 
         const transfers = new Set()
         const localTransports = new Set()
+        const localCarriers = new Set()
 
         for (const item of data) {
-            const {min: minTransferTime, max: maxTransferTime} = getTransferTimes(item);
-            item["minTransferTime"] = minTransferTime;
-            item["maxTransferTime"] = maxTransferTime;
+            const {time: transferTime} = getTransferTimes(item);
+            item["transferTime"] = transferTime;
 
-            if (typeof minTransferTime === 'number' && typeof maxTransferTime === 'number') {
-                if (localMinTransfer == null || Math.floor(minTransferTime / 3600) < localMinTransfer) {
-                    localMinTransfer = Math.floor(minTransferTime / 3600);
+            if (typeof transferTime === 'number') {
+                if (localMinTransfer == null || Math.floor(transferTime / 3600) < localMinTransfer) {
+                    localMinTransfer = Math.floor(transferTime / 3600);
                 }
-                if (localMaxTransfer == null || Math.ceil(maxTransferTime / 3600) > localMaxTransfer) {
-                    localMaxTransfer = Math.ceil(maxTransferTime / 3600);
-                    console.log(maxTransferTime, localMaxTransfer);
+                if (localMaxTransfer == null || Math.ceil(transferTime / 3600) > localMaxTransfer) {
+                    localMaxTransfer = Math.ceil(transferTime / 3600);
                 }
             }
 
@@ -140,6 +197,14 @@ function SearchPage({}) {
             transportSet.forEach((item) => {
                 localTransports.add(item)
             });
+
+            //------
+
+            const carrierSet = getCarriers(item);
+            item["carrier"] = carrierSet;
+            carrierSet.forEach((item) => {
+                localCarriers.add(item)
+            });
         }
 
         const state = Array.from(transfers).reduce((acc, value) => {
@@ -153,6 +218,12 @@ function SearchPage({}) {
             return acc;
         }, {});
         setSelectedTransport(transport);
+
+        const carriers = Array.from(localCarriers).reduce((acc, value) => {
+            acc[value] = selectedCarrier[value] ?? false;
+            return acc;
+        }, {});
+        setSelectedCarrier(carriers);
 
         setMinTransferTimeRange(localMinTransfer);
         setMaxTransferTimeRange(localMaxTransfer);
@@ -187,12 +258,13 @@ function SearchPage({}) {
         const noneSelected = Object.values(selectedTransfers).every(value => value === false);
 
         const transport = new Set(Object.entries(selectedTransport).filter(([_, value]) => value).map(([key]) => key));
+        const carrier = new Set(Object.entries(selectedCarrier).filter(([_, value]) => value).map(([key]) => key));
 
         const filtered = data
             .filter((t) =>
                 !transferTimeRange || t.transfers === 0 ||
-                Math.floor(t.minTransferTime / 3600) >= transferTimeRange[0] &&
-                Math.ceil(t.maxTransferTime / 3600) <= transferTimeRange[1]
+                Math.floor(t.transferTime / 3600) >= transferTimeRange[0] &&
+                Math.ceil(t.transferTime / 3600) <= transferTimeRange[1]
             )
             .filter((t) =>
                 !journeyTimeRange ||
@@ -205,11 +277,14 @@ function SearchPage({}) {
             )
             .filter((t) =>
                 !priceRange ||
-                Math.floor(t.minPrice) <= priceRange[1] &&
-                Math.ceil(t.maxPrice) >= priceRange[0]
+                priceRange[0] === minPrice && priceRange[1] === maxPrice ||
+                Math.floor(t.minPrice) <= priceRange[1] && Math.ceil(t.maxPrice) >= priceRange[0]
             )
             .filter((t) =>
                 transport.size === 0 || t.transport.isSubsetOf(transport)
+            )
+            .filter((t) =>
+                carrier.size === 0 || t.carrier.isSubsetOf(carrier)
             )
             .filter((t) =>
                 new Date(t.startDateTime).getHours() >= departureTimeRange[0] &&
@@ -218,11 +293,10 @@ function SearchPage({}) {
             .filter((t) =>
                 new Date(t.finishDateTime).getHours() >= arrivalTimeRange[0] &&
                 new Date(t.finishDateTime).getHours() <= arrivalTimeRange[1]
-            )
-        ;
+            );
 
         setFilteredData(filtered);
-    }, [departureTimeRange, arrivalTimeRange, selectedTransport, priceRange, selectedTransfers, journeyTimeRange, transferTimeRange, data]);
+    }, [selectedCarrier, departureTimeRange, arrivalTimeRange, selectedTransport, priceRange, selectedTransfers, journeyTimeRange, transferTimeRange, data, minPrice, maxPrice]);
 
     useEffect(() => {
         const sorted = filteredData.toSorted((a, b) => {
@@ -231,7 +305,14 @@ function SearchPage({}) {
                 if (selectedSort === "duration") {
                     result = a.duration - b.duration
                 } else if (selectedSort === "price") {
-                    result = a.minPrice - b.minPrice
+                    if (a.minPrice == null) {
+                        result = 1;
+                    } else if (b.minPrice == null) {
+                        result = -1;
+                    } else {
+                        result = a.minPrice - b.minPrice
+                    }
+                    console.log(a.minPrice, b.minPrice, result);
                 } else if (selectedSort === "departure") {
                     result = new Date(a.startDateTime) - new Date(b.startDateTime)
                 } else if (selectedSort === "arrival") {
@@ -241,7 +322,12 @@ function SearchPage({}) {
                 if (selectedSort === "duration") {
                     result = b.duration - a.duration
                 } else if (selectedSort === "price") {
-                    result = b.minPrice - a.minPrice
+                    if (a.minPrice == null) {
+                        result = 1;
+                    } else {
+                        result = b.minPrice - a.minPrice
+                    }
+                    console.log(b.minPrice, a.minPrice, result);
                 } else if (selectedSort === "departure") {
                     result = new Date(b.startDateTime) - new Date(a.startDateTime)
                 } else if (selectedSort === "arrival") {
@@ -302,16 +388,45 @@ function SearchPage({}) {
         });
     };
 
+    const handleSelectedCarrierCheckboxChange = (event) => {
+        const {name, checked} = event.target;
+
+        setSelectedCarrier({
+            ...selectedCarrier,
+            [name]: checked,
+        });
+    };
+
     return (
         <div>
-            <Header/>
+            <Header
+                logged={logged}
+                setLogged={setLogged}
+                setShowLoginModal={setShowLoginModal}
+                user={user}
+            />
             <div
-                className="bg-[#e26d00] py-[30px]  shadow-[10px_10px_10px_#d4d4d4]"
+                className="bg-orange-500 py-[30px]  shadow-[10px_10px_10px_#d4d4d4]"
             >
-                <Search handleSearchSubmit={handleSearchSubmit}/>
+                <Search
+                    handleSearchSubmit={handleSearchSubmit}
+                    setData={setData}
+                    setNetworkError={setNetworkError}
+                    loading={loading}
+                    setLoading={setLoading}
+                    to={to}
+                    setTo={setTo}
+                    from={from}
+                    setFrom={setFrom}
+                    toInput={toInput}
+                    setToInput={setToInput}
+                    fromInput={fromInput}
+                    setFromInput={setFromInput}
+                />
             </div>
+            <ProgressBar loading={loading}/>
             {(() => {
-                if (outputReceived && data.length > 0) {
+                if (outputReceived && !networkError && data.length > 0) {
                     return (
                         <div className="relative flex justify-center py-10">
                             <Criteria
@@ -335,6 +450,8 @@ function SearchPage({}) {
                                 handleDepartureRangeSliderChange={handleDepartureRangeSliderChange}
                                 arrivalTimeRange={arrivalTimeRange}
                                 handleArrivalRangeSliderChange={handleArrivalRangeSliderChange}
+                                selectedCarrier={selectedCarrier}
+                                handleSelectedCarrierCheckboxChange={handleSelectedCarrierCheckboxChange}
                             />
                             <div className="ml-10 w-[70%] max-w-[1000px] min-w-[600px]">
                                 <Sort
@@ -352,11 +469,9 @@ function SearchPage({}) {
                     )
                 } else if (loading) {
                     return (
-                        <div className="relative flex pt-2 justify-center">
-                            <img src={process.env.PUBLIC_URL + "/loading.gif"} alt="Loading..." width="75px" height="75px"/>
-                        </div>
+                        <SkeletonPlaceholder/>
                     )
-                } else {
+                } else if (networkError) {
                     return (
                         <div className="relative flex justify-center py-10">
                             <div
@@ -364,7 +479,34 @@ function SearchPage({}) {
                                 <div className="p-10 flex justify-center">
                                     <svg width="100px" height="100px" viewBox="0 0 36 36"
                                          xmlns="http://www.w3.org/2000/svg"
-                                         aria-hidden="true" role="img" class="iconify iconify--twemoji"
+                                         aria-hidden="true" role="img" className="iconify iconify--twemoji"
+                                         preserveAspectRatio="xMidYMid meet">
+                                        <path fill="#FFCC4D"
+                                              d="M36 18c0 9.941-8.059 18-18 18c-9.94 0-18-8.059-18-18C0 8.06 8.06 0 18 0c9.941 0 18 8.06 18 18"></path>
+                                        <ellipse fill="#664500" cx="11.5" cy="17" rx="2.5" ry="3.5"></ellipse>
+                                        <ellipse fill="#664500" cx="24.5" cy="17" rx="2.5" ry="3.5"></ellipse>
+                                        <path fill="#664500"
+                                              d="M5.999 13.5a1 1 0 0 1-.799-1.6c3.262-4.35 7.616-4.4 7.8-4.4a1 1 0 0 1 .004 2c-.155.002-3.568.086-6.204 3.6a.998.998 0 0 1-.801.4zm24.002 0a.998.998 0 0 1-.801-.4c-2.641-3.521-6.061-3.599-6.206-3.6a1.002 1.002 0 0 1-.991-1.005A.997.997 0 0 1 23 7.5c.184 0 4.537.05 7.8 4.4a1 1 0 0 1-.799 1.6zm-6.516 14.879C23.474 28.335 22.34 24 18 24s-5.474 4.335-5.485 4.379a.496.496 0 0 0 .232.544a.51.51 0 0 0 .596-.06C13.352 28.855 14.356 28 18 28c3.59 0 4.617.83 4.656.863a.5.5 0 0 0 .829-.484z"></path>
+                                        <path fill="#5DADEC"
+                                              d="M16 31c0 2.762-2.238 5-5 5s-5-2.238-5-5s4-10 5-10s5 7.238 5 10z"></path>
+                                    </svg>
+                                </div>
+                                <div className="text-2xl font-bold text-center">Что-то пошло не так</div>
+                                <div className="text-xl text-center">
+                                    Не удалось выполнить запрос, поробуйте еще раз.
+                                </div>
+                            </div>
+                        </div>
+                    )
+                } else if (data) {
+                    return (
+                        <div className="relative flex justify-center py-10">
+                            <div
+                                className="bg-white rounded-[20px] w-[600px] h-[300px] shadow-[10px_10px_10px_#d4d4d4]">
+                                <div className="p-10 flex justify-center">
+                                    <svg width="100px" height="100px" viewBox="0 0 36 36"
+                                         xmlns="http://www.w3.org/2000/svg"
+                                         aria-hidden="true" role="img" className="iconify iconify--twemoji"
                                          preserveAspectRatio="xMidYMid meet">
                                         <circle fill="#FFCB4C" cx="18" cy="17.018" r="17"></circle>
                                         <path fill="#65471B"
@@ -386,6 +528,7 @@ function SearchPage({}) {
                     )
                 }
             })()}
+            <Footer/>
         </div>
     );
 }

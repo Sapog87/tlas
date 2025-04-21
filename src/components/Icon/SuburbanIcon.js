@@ -2,10 +2,10 @@ import React from "react";
 
 const TrainIcon = () => (
     <div className="relative group">
-        <svg fill="red" height="24" width="24" xmlns="http://www.w3.org/2000/svg"
+        <svg fill="lime" height="24" width="24" xmlns="http://www.w3.org/2000/svg"
              viewBox="0 0 512 512">
             <g>
-                <path d="M431.665,356.848V147.207c0-48.019-38.916-86.944-86.943-86.944h-40.363l4.812-42.824h8.813
+                <path className="st0" d="M431.665,356.848V147.207c0-48.019-38.916-86.944-86.943-86.944h-40.363l4.812-42.824h8.813
                 c9.435,0,17.508,5.74,20.965,13.898l16.06-6.779V24.55C348.929,10.124,334.641,0.018,317.984,0L193.999,0.009
                 c-16.639,0.009-30.928,10.116-37.016,24.541l16.06,6.796c3.466-8.166,11.539-13.906,20.956-13.897h8.823l4.81,42.815h-40.354
                 c-48.01,0-86.942,38.924-86.942,86.944v209.641c0,36.403,26.483,66.736,61.208,72.773L87.011,512h48.488l22.378-33.823h196.264
@@ -19,8 +19,8 @@ const TrainIcon = () => (
             </g>
         </svg>
         <div
-            className="absolute hidden group-hover:block left-1/2 top-10 -translate-x-1/2 -translate-y-1/2 bg-gray-100 p-1 rounded shadow text-sm">
-            Поезд
+            className="absolute hidden group-hover:block left-1/2 top-10 -translate-x-1/2 -translate-y-1/2 bg-gray-100 p-1 rounded shadow text-sm text-center">
+            Пригородный поезд
         </div>
     </div>
 );
