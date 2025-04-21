@@ -1,14 +1,15 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {tickets} from "../../api/TicketService";
+import React, { useEffect, useRef, useState } from 'react';
+import { tickets } from "../../api/TicketService";
 import SvgRenderer from "../SvgRenderer";
-import {calculateTimeDifferenceFormated, formatDate, getCarType} from "../../Utils";
+import { calculateTimeDifferenceFormated, formatDate, getCarType } from "../../Utils";
+import SkeletonCoach from "../../Skeleton/SkeletonCoach";
 
 function Ticket({
-                    showModal,
-                    setShowModal,
-                    request,
-                    trainData
-                }) {
+    showModal,
+    setShowModal,
+    request,
+    trainData
+}) {
     const modalRef = useRef(null);
     const [data, setData] = useState(null);
     const [type, setType] = useState(null);
@@ -72,7 +73,7 @@ function Ticket({
         className="text-black fixed inset-0 bg-black bg-opacity-50 flex justify-center z-50">
         <div
             ref={modalRef}
-            className="bg-white rounded-xl w-[1000px] min-w-[1000px] h-[90vh] z-50 overflow-hidden mt-[5vh]"
+            className="bg-white rounded-2xl w-[1000px] min-w-[1000px] h-[90vh] z-50 overflow-hidden mt-[5vh]"
         >
             <div className="p-6 overflow-y-auto h-[90vh]">
                 <div className="">
@@ -82,85 +83,94 @@ function Ticket({
                         </div>
                         <table className="w-full">
                             <tbody>
-                            <tr className="flex">
-                                <td className="w-[40%] p-2.5 align-middle">
-                                    <div>
-                                        {trainData.carrier}
-                                    </div>
-                                    <div className="text-[16px] text-gray-500">
-                                        Поезд {trainData.raceNumber}, {trainData.vehicle &&
-                                        <span>«{trainData.vehicle}»</span>}
-                                    </div>
-                                </td>
-                                <td className="w-[20%] p-2.5 align-top">
-                                    <div>
+                                <tr className="flex">
+                                    <td className="w-[40%] p-2.5 align-middle">
                                         <div>
-                                            {(() => {
-                                                const dt = formatDate(trainData.startDateTime).split(' ')
-                                                return (
-                                                    <div>
-                                                        <div className="text-xl">{dt[0]} {dt[1]}</div>
-                                                        <div className="font-bold">{dt[2]}</div>
-                                                    </div>
-                                                )
-                                            })()}
+                                            {trainData.carrier}
                                         </div>
-                                        <span/>
-                                        <div className="text-[16px]/[20px] text-">
-                                            {trainData.startStation}
+                                        <div className="text-[16px] text-gray-500">
+                                            Поезд {trainData.raceNumber}, {trainData.vehicle &&
+                                                <span>«{trainData.vehicle}»</span>}
                                         </div>
-                                    </div>
-                                </td>
-                                <td className="w-[20%] py-2.5">
-                                    <div className="text-[#888888] text-center">
-                                        <div>{calculateTimeDifferenceFormated(trainData.startDateTime, trainData.finishDateTime)}</div>
-                                    </div>
-                                </td>
-                                <td className="w-[20%] p-2.5 align-top text-right">
-                                    <div>
+                                    </td>
+                                    <td className="w-[20%] p-2.5 align-top">
                                         <div>
-                                            {(() => {
-                                                const dt = formatDate(trainData.finishDateTime).split(' ')
-                                                return (
-                                                    <div>
-                                                        <div className="text-xl">{dt[0]} {dt[1]}</div>
-                                                        <div className="font-bold">{dt[2]}</div>
-                                                    </div>
-                                                )
-                                            })()}
+                                            <div>
+                                                {(() => {
+                                                    const dt = formatDate(trainData.startDateTime).split(' ')
+                                                    return (
+                                                        <div>
+                                                            <div className="text-xl">{dt[0]} {dt[1]}</div>
+                                                            <div className="font-bold">{dt[2]}</div>
+                                                        </div>
+                                                    )
+                                                })()}
+                                            </div>
+                                            <span />
+                                            <div className="text-[16px]/[20px] text-">
+                                                {trainData.startStation}
+                                            </div>
                                         </div>
-                                        <span/>
-                                        <div className="text-[16px]/[20px]">
-                                            {trainData.finishStation}
+                                    </td>
+                                    <td className="w-[20%] py-2.5">
+                                        <div className="text-[#888888] text-center">
+                                            <div>{calculateTimeDifferenceFormated(trainData.startDateTime, trainData.finishDateTime)}</div>
                                         </div>
-                                    </div>
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td className="w-[20%] p-2.5 align-top text-right">
+                                        <div>
+                                            <div>
+                                                {(() => {
+                                                    const dt = formatDate(trainData.finishDateTime).split(' ')
+                                                    return (
+                                                        <div>
+                                                            <div className="text-xl">{dt[0]} {dt[1]}</div>
+                                                            <div className="font-bold">{dt[2]}</div>
+                                                        </div>
+                                                    )
+                                                })()}
+                                            </div>
+                                            <span />
+                                            <div className="text-[16px]/[20px]">
+                                                {trainData.finishStation}
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div className="shadow-inner p-2 mb-3 bg-gray-200 rounded-xl">
-                        <div className="text-2xl mb-2">
-                            Тип выгона
+                    {data &&
+                        <div className="shadow-inner p-2 mb-3 bg-gray-200 rounded-xl">
+                            <div className="text-2xl mb-2">
+                                Тип выгона
+                            </div>
+                            <div className="flex flex-wrap gap-3">
+                                {coachTypes.map(coachType => (<button
+                                    key={coachType}
+                                    onClick={() => setType(coachType)}
+                                    className={`px-4 py-2 rounded-xl ${type === coachType ? 'bg-[#96dbfa] text-white' : 'bg-gray-200'}`}
+                                >
+                                    <div>
+                                        <span className="capitalize">
+                                            {getCarType(coachType)} — {data && data.coaches.filter(coach => coach.carType === coachType).reduce((accumulator, currentValue) => accumulator + currentValue.freePlaces.length, 0)}
+                                        </span>
+                                    </div>
+                                </button>))}
+                            </div>
                         </div>
-                        <div className="flex flex-wrap gap-3">
-                            {coachTypes.map(coachType => (<button
-                                key={coachType}
-                                onClick={() => setType(coachType)}
-                                className={`px-4 py-2 rounded-xl ${type === coachType ? 'bg-[#96dbfa] text-white' : 'bg-gray-200'}`}
-                            >
-                                <div>
-                            <span className="capitalize">
-                                {getCarType(coachType)} — {data && data.coaches.filter(coach => coach.carType === coachType).reduce((accumulator, currentValue) => accumulator + currentValue.freePlaces.length, 0)}
-                            </span>
-                                </div>
-                            </button>))}
-                        </div>
-                    </div>
+                    }
                 </div>
                 <div
-                    className="space-y-[30px]"
+                    className="space-y-[15px]"
                 >
+                    {!data &&
+                        <div>
+                            <SkeletonCoach />
+                            <SkeletonCoach />
+                            <SkeletonCoach />
+                        </div>
+                    }
                     {data && data.coaches
                         .filter(coach => coach.carType === type)
                         .map((coach) => {
