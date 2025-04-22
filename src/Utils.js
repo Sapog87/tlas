@@ -140,7 +140,7 @@ export const getCarriers = (route) => {
 export const getCarType = (type) => {
     switch (type) {
         case "COMPARTMENT":
-            return  "купе";
+            return "купе";
         case "RESERVED_SEAT":
             return "плацкарт";
         case "LUXURY":
@@ -155,9 +155,30 @@ export const getCarType = (type) => {
 }
 
 export const getPlaceType = (type) => {
-    if (type.toLowerCase().includes("upper")) return "Верхнее"
-    else if (type.toLowerCase().includes("lower")) return "Нижнее"
-    else {
+    if (type === "Upper") return "Верхнее"
+    else if (type === "Lower") return "Нижнее"
+    else if (type === "SideUpper") return "Боковое верхнее"
+    else if (type === "SideLower") return "Боковое нижнее"
+    else if (type === "NoValue") return "Обычное место"
+    else if (type === "NoTableBackward") return "Не у стола, против хода"
+    else if (type === "NoTableForward") return "Не у стола, по ходу"
+    else if (type === "NearTableBackward") return "У стола, против хода"
+    else if (type === "NearTableForward") return "У стола, по хода"
+    else if (type === "NoWindowBackward") return "Без окна, против хода"
+    else if (type === "NoWindowForward") return "Без окна, по ходу"
+    else if (type === "WithPets") return "Для пассажира с животным"
+    else if (type === "WithChild") return "Для пассажира с детьми"
+    else if (type === "SideUpperWithHigherLevelOfNoise") return "Боковое верхнее у туалета"
+    else if (type === "SideLowerWithHigherLevelOfNoise") return "Боковое нижнее у туалета"
+    else if (type === "LastCompartmentLowerWithHigherLevelOfNoise") return "Нижнее у туалета"
+    else if (type === "LastCompartmentUpperWithHigherLevelOfNoise") return "Верхнее у туалета"
+    else if (type.toLowerCase().includes("upper")) {
+        console.debug(type)
+        return "Верхнее"
+    } else if (type.toLowerCase().includes("lower")) {
+        console.debug(type)
+        return "Нижнее"
+    } else {
         console.debug(type)
         return null
     }

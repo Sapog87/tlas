@@ -9,9 +9,9 @@ const Carrier = ({
             <div className="p-1">
                 {Object.keys(selectedCarrier).map((key) => (
                     <div>
-                        <label className="flex" key={key}>
+                        <label className="flex items-start" key={key}>
                             <input
-                                className="accent-[#96dbfa] mr-2"
+                                className="accent-[#96dbfa] mr-2 mt-[5px]"
                                 type="checkbox"
                                 name={key}
                                 checked={!!selectedCarrier[key]}

@@ -5,71 +5,78 @@ import EmptySearchPage from "./components/SearchPage/EmptySearchPage";
 import SearchPage from "./components/SearchPage/SearchPage";
 import {info} from "./api/UserService";
 import LoginSignup from "./components/Auth/LoginSignup";
+import {Helmet} from "react-helmet";
 
 function App() {
     const [logged, setLogged] = useState(false);
     const [user, setUser] = useState(null);
     const [showLoginModal, setShowLoginModal] = useState(false);
 
+    const checkAuth = async () => {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            setLogged(false);
+        } else {
+            info(token)
+                .then(response => {
+                    console.log(response);
+                    if (response.status === 401 || response.status !== 200) {
+                        localStorage.removeItem("token");
+                        setLogged(false);
+                    } else if (response.status === 200) {
+                        setLogged(true);
+                        return response.json();
+                    }
+                })
+                .then(data => {
+                    setUser(data);
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        }
+    };
+
     useEffect(() => {
-        const checkAuth = async () => {
-            const token = localStorage.getItem("token");
-
-            if (!token) {
-                setLogged(false);
-            } else {
-                info(token)
-                    .then(response => {
-                        console.log(response);
-                        if (response.status === 401 || response.status !== 200) {
-                            localStorage.removeItem("token");
-                            setLogged(false);
-                        } else if (response.status === 200) {
-                            setLogged(true);
-                            return response.json();
-                        }
-                    })
-                    .then(data => {
-                        setUser(data);
-                    })
-                    .catch(err => {
-                        console.log(err);
-                    });
-            }
-        };
-
         checkAuth();
     }, []);
 
     return (
-        <div className='Window'>
-            <Routes>
-                <Route path='*' element={<Navigate to={'/'}/>}/>
-                <Route path='/' element={
-                    <EmptySearchPage
-                        logged={logged}
+        <>
+            <Helmet>
+                <title>TLAS</title>
+            </Helmet>
+            <div className='Window'>
+                <Routes>
+                    <Route path='*' element={<Navigate to={'/'}/>}/>
+                    <Route path='/' element={
+                        <EmptySearchPage
+                            logged={logged}
+                            setLogged={setLogged}
+                            setShowLoginModal={setShowLoginModal}
+                            user={user}
+                        />
+                    }/>
+                    <Route path='/search' element={
+                        <SearchPage
+                            logged={logged}
+                            setLogged={setLogged}
+                            setShowLoginModal={setShowLoginModal}
+                            user={user}
+                        />
+                    }/>
+                </Routes>
+                {showLoginModal &&
+                    <LoginSignup
                         setLogged={setLogged}
+                        showLoginModal={showLoginModal}
                         setShowLoginModal={setShowLoginModal}
-                        user={user}
+                        checkAuth={checkAuth}
                     />
-                }/>
-                <Route path='/search' element={
-                    <SearchPage
-                        logged={logged}
-                        setLogged={setLogged}
-                        setShowLoginModal={setShowLoginModal}
-                        user={user}
-                    />
-                }/>
-            </Routes>
-            {showLoginModal &&
-                <LoginSignup
-                    setLogged={setLogged}
-                    showLoginModal={showLoginModal}
-                    setShowLoginModal={setShowLoginModal}
-                />
-            }
-        </div>
+                }
+            </div>
+        </>
     );
 }
 

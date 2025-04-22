@@ -78,7 +78,7 @@ function Route({
                             {startCity} — {finishCity}
                         </div>
                         <div className="text-[14px] text-[#555555]">
-                            <span>{carrier}</span> {vehicle && <span className="text-orange-800">«{vehicle}»</span>}
+                            <span>{carrier}</span> {vehicle && <span className="text-orange-800">{vehicle}</span>}
                         </div>
                     </td>
                     <td className="w-[35%] p-2.5 align-top">

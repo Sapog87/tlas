@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import SVG from 'react-inlinesvg';
 import root from 'react-shadow';
-import {getPlaceType} from "../Utils";
+import {getPlaceType} from "../../Utils";
 
 const decodeSvgString = (raw) => {
     const unescaped = raw
@@ -21,7 +21,15 @@ const SvgRenderer = ({rawSvg, places}) => {
     const svgRef = useRef(null)
     const [svg, setSvg] = useState(null)
     const containerRef = useRef(null);
-    const [tooltip, setTooltip] = useState({visible: false, price: 0, text: "", type: "", class: "", x: 0, y: 0});
+    const [tooltip, setTooltip] = useState({
+        visible: false,
+        price: 0,
+        text: "",
+        type: "",
+        serviceClass: "",
+        x: 0,
+        y: 0
+    });
 
     useEffect(() => {
         if (!svgRef.current) return;
@@ -29,7 +37,7 @@ const SvgRenderer = ({rawSvg, places}) => {
         console.log(svgRef)
 
         places.forEach((place) => {
-            const [number, gender] = /[МЖС]$/.test(place.number) ? [place.number.slice(0, -1), place.number[-1]] : [place.number, 'С']
+            const [number, gender] = /[МЖС]$/.test(place.number) ? [place.number.slice(0, -1), place.number[-1]] : [place.number, null]
             const seat = svgRef.current.getElementById("Seat" + number);
             if (seat) {
                 seat.style.stroke = '#5583de';
@@ -44,6 +52,7 @@ const SvgRenderer = ({rawSvg, places}) => {
                         text: `Место ${number}`,
                         price: place.kopecks / 100.0,
                         type: getPlaceType(place.type),
+                        serviceClass: place.serviceClass,
                         x: rect.left - containerRect.left + rect.width / 2,
                         y: rect.top - containerRect.top + rect.height + 8,
                     });
@@ -99,11 +108,13 @@ const SvgRenderer = ({rawSvg, places}) => {
                     }}
                 >
                     <div>
-                        {tooltip.text}
+                        {tooltip.text} ({tooltip.serviceClass})
                     </div>
-                    <div>
-                        {tooltip.type}
-                    </div>
+                    {tooltip.type &&
+                        <div>
+                            {tooltip.type}
+                        </div>
+                    }
                     <div>
                         {tooltip.price}₽
                     </div>

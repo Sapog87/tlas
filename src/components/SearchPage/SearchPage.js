@@ -8,7 +8,7 @@ import ResultArea from "../Result/ResultArea";
 import Sort from "../Criteria/Sort";
 import Footer from "../Footer/Footer";
 import ProgressBar from "../ProgressBar/ProgressBar";
-import SkeletonPlaceholder from "../../Skeleton/SkeletonPlaceholder";
+import SkeletonPlaceholder from "../Skeleton/SkeletonPlaceholder";
 
 function SearchPage({
                         logged,
@@ -287,12 +287,20 @@ function SearchPage({
                 carrier.size === 0 || t.carrier.isSubsetOf(carrier)
             )
             .filter((t) =>
-                new Date(t.startDateTime).getHours() >= departureTimeRange[0] &&
-                new Date(t.startDateTime).getHours() <= departureTimeRange[1]
+                (new Date(t.startDateTime).getHours() > departureTimeRange[0]
+                    || (new Date(t.startDateTime).getHours() === departureTimeRange[0]
+                        && new Date(t.startDateTime).getMinutes() === 0))
+                && (new Date(t.startDateTime).getHours() < departureTimeRange[1]
+                    || (new Date(t.startDateTime).getHours() === departureTimeRange[1]
+                        && new Date(t.startDateTime).getMinutes() === 0))
             )
             .filter((t) =>
-                new Date(t.finishDateTime).getHours() >= arrivalTimeRange[0] &&
-                new Date(t.finishDateTime).getHours() <= arrivalTimeRange[1]
+                (new Date(t.finishDateTime).getHours() > arrivalTimeRange[0]
+                    || (new Date(t.finishDateTime).getHours() === arrivalTimeRange[0]
+                        && new Date(t.finishDateTime).getMinutes() === 0))
+                && (new Date(t.finishDateTime).getHours() < arrivalTimeRange[1]
+                    || (new Date(t.finishDateTime).getHours() === arrivalTimeRange[1]
+                        && new Date(t.finishDateTime).getMinutes() === 0))
             );
 
         setFilteredData(filtered);

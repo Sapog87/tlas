@@ -1,15 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { tickets } from "../../api/TicketService";
-import SvgRenderer from "../SvgRenderer";
-import { calculateTimeDifferenceFormated, formatDate, getCarType } from "../../Utils";
-import SkeletonCoach from "../../Skeleton/SkeletonCoach";
+import React, {useEffect, useRef, useState} from 'react';
+import {tickets} from "../../api/TicketService";
+import SvgRenderer from "./SvgRenderer";
+import {calculateTimeDifferenceFormated, formatDate, getCarType} from "../../Utils";
+import SkeletonCoach from "../Skeleton/SkeletonCoach";
+import ListRenderer from "./ListRenderer";
 
 function Ticket({
-    showModal,
-    setShowModal,
-    request,
-    trainData
-}) {
+                    showModal,
+                    setShowModal,
+                    request,
+                    trainData
+                }) {
     const modalRef = useRef(null);
     const [data, setData] = useState(null);
     const [type, setType] = useState(null);
@@ -75,7 +76,7 @@ function Ticket({
             ref={modalRef}
             className="bg-white rounded-2xl w-[1000px] min-w-[1000px] h-[90vh] z-50 overflow-hidden mt-[5vh]"
         >
-            <div className="p-6 overflow-y-auto h-[90vh]">
+            <div className="p-6 overflow-y-auto h-[90vh] scroll">
                 <div className="">
                     <div className="text-2xl p-2 mb-3 shadow-inner bg-gray-200 rounded-xl">
                         <div className="p-2">
@@ -83,60 +84,60 @@ function Ticket({
                         </div>
                         <table className="w-full">
                             <tbody>
-                                <tr className="flex">
-                                    <td className="w-[40%] p-2.5 align-middle">
+                            <tr className="flex">
+                                <td className="w-[40%] p-2.5 align-middle">
+                                    <div>
+                                        {trainData.carrier}
+                                    </div>
+                                    <div className="text-[16px] text-gray-500">
+                                        Поезд {trainData.raceNumber}{trainData.vehicle &&
+                                        <span>, «{trainData.vehicle}»</span>}
+                                    </div>
+                                </td>
+                                <td className="w-[20%] p-2.5 align-top">
+                                    <div>
                                         <div>
-                                            {trainData.carrier}
+                                            {(() => {
+                                                const dt = formatDate(trainData.startDateTime).split(' ')
+                                                return (
+                                                    <div>
+                                                        <div className="text-xl">{dt[0]} {dt[1]}</div>
+                                                        <div className="font-bold">{dt[2]}</div>
+                                                    </div>
+                                                )
+                                            })()}
                                         </div>
-                                        <div className="text-[16px] text-gray-500">
-                                            Поезд {trainData.raceNumber}, {trainData.vehicle &&
-                                                <span>«{trainData.vehicle}»</span>}
+                                        <span/>
+                                        <div className="text-[16px]/[20px] text-">
+                                            {trainData.startStation}
                                         </div>
-                                    </td>
-                                    <td className="w-[20%] p-2.5 align-top">
+                                    </div>
+                                </td>
+                                <td className="w-[20%] py-2.5">
+                                    <div className="text-[#888888] text-center">
+                                        <div>{calculateTimeDifferenceFormated(trainData.startDateTime, trainData.finishDateTime)}</div>
+                                    </div>
+                                </td>
+                                <td className="w-[20%] p-2.5 align-top text-right">
+                                    <div>
                                         <div>
-                                            <div>
-                                                {(() => {
-                                                    const dt = formatDate(trainData.startDateTime).split(' ')
-                                                    return (
-                                                        <div>
-                                                            <div className="text-xl">{dt[0]} {dt[1]}</div>
-                                                            <div className="font-bold">{dt[2]}</div>
-                                                        </div>
-                                                    )
-                                                })()}
-                                            </div>
-                                            <span />
-                                            <div className="text-[16px]/[20px] text-">
-                                                {trainData.startStation}
-                                            </div>
+                                            {(() => {
+                                                const dt = formatDate(trainData.finishDateTime).split(' ')
+                                                return (
+                                                    <div>
+                                                        <div className="text-xl">{dt[0]} {dt[1]}</div>
+                                                        <div className="font-bold">{dt[2]}</div>
+                                                    </div>
+                                                )
+                                            })()}
                                         </div>
-                                    </td>
-                                    <td className="w-[20%] py-2.5">
-                                        <div className="text-[#888888] text-center">
-                                            <div>{calculateTimeDifferenceFormated(trainData.startDateTime, trainData.finishDateTime)}</div>
+                                        <span/>
+                                        <div className="text-[16px]/[20px]">
+                                            {trainData.finishStation}
                                         </div>
-                                    </td>
-                                    <td className="w-[20%] p-2.5 align-top text-right">
-                                        <div>
-                                            <div>
-                                                {(() => {
-                                                    const dt = formatDate(trainData.finishDateTime).split(' ')
-                                                    return (
-                                                        <div>
-                                                            <div className="text-xl">{dt[0]} {dt[1]}</div>
-                                                            <div className="font-bold">{dt[2]}</div>
-                                                        </div>
-                                                    )
-                                                })()}
-                                            </div>
-                                            <span />
-                                            <div className="text-[16px]/[20px]">
-                                                {trainData.finishStation}
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
+                                    </div>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -166,9 +167,10 @@ function Ticket({
                 >
                     {!data &&
                         <div>
-                            <SkeletonCoach />
-                            <SkeletonCoach />
-                            <SkeletonCoach />
+                            <SkeletonCoach/>
+                            <SkeletonCoach/>
+                            <SkeletonCoach/>
+                            <SkeletonCoach/>
                         </div>
                     }
                     {data && data.coaches
@@ -179,39 +181,77 @@ function Ticket({
                                     <div className="px-5 py-2 text-2xl">
                                         Вагон {coach.number}
                                     </div>
-                                    <div>
-                                        {(() => {
-                                            if (coach.schemeId != null) {
-                                                if (coach.isTwoStorey === false) {
-                                                    return (<div className="flex justify-center">
-                                                        <SvgRenderer
-                                                            rawSvg={data.schemes.find(e => e.id === coach.schemeId && e.isFirstStorey === true).svg}
-                                                            places={coach.freePlaces}
-                                                        />
-                                                    </div>)
-                                                } else {
-                                                    return (<div className="flex justify-center">
-                                                        <div>
-                                                            <div className="text-xl">Этаж 2</div>
+                                    {(() => {
+                                        if (coach.schemeName != null) {
+                                            if (coach.isTwoStorey === false) {
+                                                const rawSvg = data.schemes.find(e => e.name === coach.schemeName && e.isFirstStorey === true)
+                                                if (rawSvg) {
+                                                    return (
+                                                        <div className="flex justify-center">
                                                             <SvgRenderer
-                                                                rawSvg={data.schemes.find(e => e.id === coach.schemeId && e.isFirstStorey === false).svg}
-                                                                places={coach.freePlaces}
-                                                            />
-                                                            <div className="text-xl">Этаж 1</div>
-                                                            <SvgRenderer
-                                                                rawSvg={data.schemes.find(e => e.id === coach.schemeId && e.isFirstStorey === true).svg}
+                                                                rawSvg={rawSvg.svg}
                                                                 places={coach.freePlaces}
                                                             />
                                                         </div>
-                                                    </div>)
+                                                    )
+                                                } else {
+                                                    return (
+                                                        <div className="w-full px-5 py-4">
+                                                            <ListRenderer places={coach.freePlaces} />
+                                                        </div>
+                                                    )
                                                 }
                                             } else {
-                                                return (<div>
-
-                                                </div>)
+                                                const rawSvg1 = data.schemes.find(e => e.name === coach.schemeName && e.isFirstStorey === true)
+                                                const rawSvg2 = data.schemes.find(e => e.name === coach.schemeName && e.isFirstStorey === false)
+                                                if (rawSvg1 && rawSvg2) {
+                                                    return (
+                                                        <div className="flex justify-center">
+                                                            <div>
+                                                                <div className="text-xl">Этаж 2</div>
+                                                                <SvgRenderer
+                                                                    rawSvg={rawSvg2.svg}
+                                                                    places={coach.freePlaces}
+                                                                />
+                                                                <div className="text-xl">Этаж 1</div>
+                                                                <SvgRenderer
+                                                                    rawSvg={rawSvg1.svg}
+                                                                    places={coach.freePlaces}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                } else {
+                                                    return (
+                                                        <div className="flex justify-center">
+                                                            <div>
+                                                                <ListRenderer places={coach.freePlaces} />
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                }
                                             }
-                                        })()}
-                                    </div>
+                                        } else {
+                                            if (coach.isTwoStorey === false) {
+                                                return (
+                                                    <div className="flex justify-center">
+                                                        нет схемы
+                                                    </div>
+                                                )
+                                            } else {
+                                                return (
+                                                    <div className="flex justify-center">
+                                                        <div>
+                                                            <div className="text-xl">Этаж 2</div>
+                                                            <div>нет схемы</div>
+                                                            <div className="text-xl">Этаж 1</div>
+                                                            <div>нет схемы</div>
+                                                        </div>
+                                                    </div>
+                                                )
+                                            }
+                                        }
+                                    })()}
                                 </div>
                             )
                         })}

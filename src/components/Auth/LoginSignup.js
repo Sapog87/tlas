@@ -4,7 +4,8 @@ import {login, signup} from "../../api/AuthService";
 function LoginSignup({
                          setLogged,
                          showLoginModal,
-                         setShowLoginModal
+                         setShowLoginModal,
+                         checkAuth
                      }) {
     const [isLogin, setIsLogin] = useState(true);
     const modalRef = useRef(null);
@@ -60,6 +61,7 @@ function LoginSignup({
                 } else {
                     const data = await response.json();
                     localStorage.setItem("token", data.token);
+                    await checkAuth()
 
                     setLogged(true);
                     setShowLoginModal(false);
@@ -78,6 +80,7 @@ function LoginSignup({
                     } else {
                         const data = await response.json();
                         localStorage.setItem("token", data.token);
+                        await checkAuth()
 
                         setLogged(true);
                         setShowLoginModal(false);

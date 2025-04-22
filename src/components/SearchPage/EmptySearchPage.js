@@ -3,7 +3,7 @@ import Search from "../Search/Search";
 import {useNavigate} from "react-router-dom";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
-import History from "../History";
+import History from "./History";
 import { ReactSVG } from 'react-svg'
 
 function EmptySearchPage({

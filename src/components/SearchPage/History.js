@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {favorite, history, removeHistory} from "../api/SearchHistoryService";
+import {favorite, history, removeHistory} from "../../api/SearchHistoryService";
 import Skeleton from "react-loading-skeleton";
 
 function History({

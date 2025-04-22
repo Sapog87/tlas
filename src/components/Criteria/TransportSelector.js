@@ -9,9 +9,9 @@ const TransportSelector = ({
             <div className="p-1">
                 {Object.keys(selectedTransport).map((key) => (
                     <div>
-                        <label className="flex" key={key}>
+                        <label className="flex items-start" key={key}>
                             <input
-                                className="accent-[#96dbfa] mr-2"
+                                className="accent-[#96dbfa] mr-2 mt-[5px]"
                                 type="checkbox"
                                 name={key}
                                 checked={!!selectedTransport[key]}
@@ -35,7 +35,7 @@ const TransportSelector = ({
                                 }
 
                                 return (
-                                    <div className="select-none">{name}</div>
+                                    <div>{name}</div>
                                 )
                             })()}
                         </label>
