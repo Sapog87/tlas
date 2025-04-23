@@ -176,10 +176,15 @@ function Ticket({
                     {data && data.coaches
                         .filter(coach => coach.carType === type)
                         .map((coach) => {
+                            coach.minPrice = Math.min(...coach.freePlaces.map(x => x.kopecks)) / 100.0
+                            return coach
+                        })
+                        .map((coach) => {
                             return (
                                 <div className="shadow-inner bg-gray-200 rounded-xl">
                                     <div className="px-5 py-2 text-2xl">
-                                        Вагон {coach.number}
+                                        <span className="font-bold">Вагон {coach.number}</span> {coach.minPrice &&
+                                        <span className="text-xl">от {coach.minPrice}₽</span>}
                                     </div>
                                     {(() => {
                                         if (coach.schemeName != null) {
@@ -197,7 +202,7 @@ function Ticket({
                                                 } else {
                                                     return (
                                                         <div className="w-full px-5 py-4">
-                                                            <ListRenderer places={coach.freePlaces} />
+                                                            <ListRenderer places={coach.freePlaces}/>
                                                         </div>
                                                     )
                                                 }
@@ -225,7 +230,7 @@ function Ticket({
                                                     return (
                                                         <div className="flex justify-center">
                                                             <div>
-                                                                <ListRenderer places={coach.freePlaces} />
+                                                                <ListRenderer places={coach.freePlaces}/>
                                                             </div>
                                                         </div>
                                                     )
