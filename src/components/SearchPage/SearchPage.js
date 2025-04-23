@@ -289,18 +289,18 @@ function SearchPage({
             .filter((t) =>
                 (new Date(t.startDateTime).getHours() > departureTimeRange[0]
                     || (new Date(t.startDateTime).getHours() === departureTimeRange[0]
-                        && new Date(t.startDateTime).getMinutes() === 0))
+                        && new Date(t.startDateTime).getMinutes() >= 0))
                 && (new Date(t.startDateTime).getHours() < departureTimeRange[1]
                     || (new Date(t.startDateTime).getHours() === departureTimeRange[1]
-                        && new Date(t.startDateTime).getMinutes() === 0))
+                        && new Date(t.startDateTime).getMinutes() >= 0))
             )
             .filter((t) =>
                 (new Date(t.finishDateTime).getHours() > arrivalTimeRange[0]
                     || (new Date(t.finishDateTime).getHours() === arrivalTimeRange[0]
-                        && new Date(t.finishDateTime).getMinutes() === 0))
+                        && new Date(t.finishDateTime).getMinutes() >= 0))
                 && (new Date(t.finishDateTime).getHours() < arrivalTimeRange[1]
                     || (new Date(t.finishDateTime).getHours() === arrivalTimeRange[1]
-                        && new Date(t.finishDateTime).getMinutes() === 0))
+                        && new Date(t.finishDateTime).getMinutes() >= 0))
             );
 
         setFilteredData(filtered);
