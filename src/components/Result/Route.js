@@ -1,8 +1,9 @@
 import React from 'react';
-import {calculateTimeDifferenceFormated, formatDate, formatDateWithoutOffset, getCarType} from '../../Utils';
+import {calculateTimeDifferenceFormated, formatDateWithoutOffset, getCarType} from '../../Utils';
 import TrainIcon from "../Icon/TrainIcon";
 import PlaneIcon from "../Icon/PlaneIcon";
 import SuburbanIcon from "../Icon/SuburbanIcon";
+import BusIcon from "../Icon/BusIcon";
 
 function Route({
                    transport,
@@ -69,6 +70,12 @@ function Route({
                                 return (
                                     <div className="flex">
                                         <SuburbanIcon/> {raceNumber}
+                                    </div>
+                                )
+                            } else if (transport === "BUS") {
+                                return (
+                                    <div className="flex">
+                                        <BusIcon/> {raceNumber}
                                     </div>
                                 )
                             }

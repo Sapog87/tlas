@@ -29,6 +29,9 @@ const TransportSelector = ({
                                     case "SUBURBAN":
                                         name = "Пригородный поезд";
                                         break;
+                                    case "BUS":
+                                        name = "Автобус";
+                                        break;
                                     default:
                                         name = key;
                                         break;

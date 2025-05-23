@@ -173,13 +173,10 @@ export const getPlaceType = (type) => {
     else if (type === "LastCompartmentLowerWithHigherLevelOfNoise") return "Нижнее у туалета"
     else if (type === "LastCompartmentUpperWithHigherLevelOfNoise") return "Верхнее у туалета"
     else if (type.toLowerCase().includes("upper")) {
-        console.debug(type)
         return "Верхнее"
     } else if (type.toLowerCase().includes("lower")) {
-        console.debug(type)
         return "Нижнее"
     } else {
-        console.debug(type)
         return null
     }
 }

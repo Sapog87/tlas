@@ -7,6 +7,7 @@ import SuburbanIcon from "../Icon/SuburbanIcon";
 import {motion} from "framer-motion";
 import Ticket from "./Ticket";
 import {calculateTimeDifferenceFormated, formatDateWithoutOffset} from "../../Utils";
+import BusIcon from "../Icon/BusIcon";
 
 function ResultArea({data}) {
     const [showModal, setShowModal] = useState(false);
@@ -45,9 +46,9 @@ function ResultArea({data}) {
             )}
             {data && data.length > 0 && data.map((item) => (
                 <motion.div
-                    initial={{opacity: 0, y: 20}} // начальное состояние (скрыт и немного снизу)
-                    animate={{opacity: 1, y: 0}}  // конечное состояние (показан и на месте)
-                    transition={{duration: 0.5}}  // длительность анимации
+                    initial={{opacity: 0, y: 20}}
+                    animate={{opacity: 1, y: 0}}
+                    transition={{duration: 0.5}}
                 >
                     <div className="bg-white rounded-[20px] mb-8 p-2.5 shadow-[10px_10px_10px_#d4d4d4]">
                         <div className="p-2.5">
@@ -79,6 +80,13 @@ function ResultArea({data}) {
                                                                     <div
                                                                         className="bg-[#e4e4e4] p-1 m-1 rounded-[5px] shadow-inner">
                                                                         <SuburbanIcon/>
+                                                                    </div>
+                                                                )
+                                                            } else if (segment.transport === "BUS") {
+                                                                return (
+                                                                    <div
+                                                                        className="bg-[#e4e4e4] p-1 m-1 rounded-[5px] shadow-inner">
+                                                                        <BusIcon/>
                                                                     </div>
                                                                 )
                                                             }

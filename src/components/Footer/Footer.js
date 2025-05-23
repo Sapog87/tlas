@@ -4,7 +4,8 @@ function Footer() {
     return (
         <div>
             <hr className="h-px bg-gray-200 border-0 dark:bg-gray-400"/>
-            <div className="p-2.5 flex flex-col items-center justify-center text-center text-sm text-black dark:text-black">
+            <div
+                className="p-2.5 flex flex-col items-center justify-center text-center text-sm text-black dark:text-black">
                 <p>
                     Исходный код доступен на&nbsp;
                     <a

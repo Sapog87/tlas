@@ -57,7 +57,7 @@ function SearchPage({
     const sortOptions = [
         {id: "duration", label: "Продолжительность"},
         {id: "price", label: "Цена"},
-        {id: "departure", label: "Убытие"},
+        {id: "departure", label: "Отправление"},
         {id: "arrival", label: "Прибытие"},
     ];
 
@@ -283,8 +283,10 @@ function SearchPage({
             .filter((t) =>
                 transport.size === 0 || t.transport.isSubsetOf(transport)
             )
-            .filter((t) =>
-                carrier.size === 0 || t.carrier.isSubsetOf(carrier)
+            .filter((t) => {
+                    console.log(t.carrier)
+                    return carrier.size === 0 || (t.carrier.size !== 0 && t.carrier.isSubsetOf(carrier))
+                }
             )
             .filter((t) =>
                 (new Date(t.startDateTime).getHours() > departureTimeRange[0]

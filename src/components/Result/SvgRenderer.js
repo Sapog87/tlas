@@ -34,7 +34,15 @@ const SvgRenderer = ({rawSvg, places}) => {
     useEffect(() => {
         if (!svgRef.current) return;
 
-        console.log(svgRef)
+        const seats = svgRef.current.querySelectorAll('[id*="Seat"]');
+        seats.forEach((seat) => {
+            seat.style.stroke = "";
+            seat.style.fill = "";
+        });
+
+        console.log(places)
+
+        const listeners = [];
 
         places.forEach((place) => {
             const [number, gender] = /[МЖС]$/.test(place.number) ? [place.number.slice(0, -1), place.number[-1]] : [place.number, null]
@@ -65,14 +73,26 @@ const SvgRenderer = ({rawSvg, places}) => {
                 seat.addEventListener("mouseenter", handleMouseEnter);
                 seat.addEventListener("mouseleave", handleMouseLeave);
 
-                return () => {
-                    seat.removeEventListener("mouseenter", handleMouseEnter);
-                    seat.removeEventListener("mouseleave", handleMouseLeave);
-                };
+                listeners.push({
+                    element: seat,
+                    handlers: [
+                        {type: "mouseenter", handler: handleMouseEnter},
+                        {type: "mouseleave", handler: handleMouseLeave},
+                    ],
+                });
+
             }
         });
 
-    }, [svg])
+        return () => {
+            listeners.forEach(({element, handlers}) => {
+                handlers.forEach(({type, handler}) => {
+                    element.removeEventListener(type, handler);
+                });
+            });
+        };
+
+    }, [places, svg])
 
     return (
         <div ref={containerRef} className="relative inline-block">

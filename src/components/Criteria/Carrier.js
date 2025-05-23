@@ -1,13 +1,13 @@
 import React from 'react';
 
 const Carrier = ({
-                               selectedCarrier,
-                               handleSelectedCarrierCheckboxChange
-                           }) => {
+                     selectedCarrier,
+                     handleSelectedCarrierCheckboxChange
+                 }) => {
     return (
         <div className="p-2">
             <div className="p-1">
-                {Object.keys(selectedCarrier).map((key) => (
+                {Object.keys(selectedCarrier).sort((a, b) => a.length - b.length).map((key) => (
                     <div>
                         <label className="flex items-start" key={key}>
                             <input
@@ -18,24 +18,8 @@ const Carrier = ({
                                 onChange={handleSelectedCarrierCheckboxChange}
                             />
                             {(() => {
-                                let name;
-                                switch (key) {
-                                    case "TRAIN":
-                                        name = "Поезд";
-                                        break;
-                                    case "PLANE":
-                                        name = "Самолет";
-                                        break;
-                                    case "SUBURBAN":
-                                        name = "Пригородный поезд";
-                                        break;
-                                    default:
-                                        name = key;
-                                        break;
-                                }
-
                                 return (
-                                    <div className="select-none">{name}</div>
+                                    <div className="select-none">{key}</div>
                                 )
                             })()}
                         </label>

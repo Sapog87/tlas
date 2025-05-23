@@ -4,7 +4,7 @@ import {useNavigate} from "react-router-dom";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import History from "./History";
-import { ReactSVG } from 'react-svg'
+import {ReactSVG} from 'react-svg'
 
 function EmptySearchPage({
                              logged,
@@ -29,7 +29,7 @@ function EmptySearchPage({
     }
 
     return (
-        <div className="top-large">
+        <div className="static h-[300px]">
             <Header
                 logged={logged}
                 setLogged={setLogged}
@@ -89,7 +89,8 @@ function EmptySearchPage({
                                           fill="#030D45"/>
                                 </svg>
                             </div>
-                            <div className="font-bold text-[18px]">Войдите, чтобы получить доступ к истории поиска и избранным
+                            <div className="font-bold text-[18px]">Войдите, чтобы получить доступ к истории поиска и
+                                избранным
                                 маршрутам
                             </div>
                         </div>
@@ -105,7 +106,7 @@ function EmptySearchPage({
                 </div>
             </div>
             <Footer/>
-            <ReactSVG src="https://ticket.rzd.ru/api/v1/carscheme/image/325/PcFirstStorey" />
+            <ReactSVG src="https://ticket.rzd.ru/api/v1/carscheme/image/325/PcFirstStorey"/>
         </div>
     );
 }

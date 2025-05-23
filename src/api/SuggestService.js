@@ -12,7 +12,8 @@ export async function getNode(code) {
 
 export async function getSuggestions(part) {
     let token = localStorage.getItem("token");
-    return await fetch(`${API_URL}/suggest?part=${part}`, {
+
+    return await fetch(`${API_URL}/suggest?part=${encodeURIComponent(part)}`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${token}`,

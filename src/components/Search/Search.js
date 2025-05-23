@@ -386,6 +386,7 @@ function Search({
                             setDate(date);
                             clearError('date');
                         }}
+                        placeholderText={'Отправление'}
                         showMonthYearDropdown
                         dateFormat="d MMMM"
                         maxDate={addDays(new Date(), 89)}

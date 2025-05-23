@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {tickets} from "../../api/TicketService";
 import SvgRenderer from "./SvgRenderer";
-import {calculateTimeDifferenceFormated, formatDate, getCarType} from "../../Utils";
+import {calculateTimeDifferenceFormated, formatDate, getCarType, getPlaceType} from "../../Utils";
 import SkeletonCoach from "../Skeleton/SkeletonCoach";
 import ListRenderer from "./ListRenderer";
 
@@ -14,6 +14,8 @@ function Ticket({
     const modalRef = useRef(null);
     const [data, setData] = useState(null);
     const [type, setType] = useState(null);
+    const [place, setPlace] = useState(null);
+    const [placeTypes, setPlaceTypes] = useState("All");
 
     const coachTypes = data ? [...new Set(data.coaches.map(coach => coach.carType))] : [];
 
@@ -70,13 +72,30 @@ function Ticket({
         setType(coachTypes[0])
     }, [data]);
 
+    useEffect(() => {
+        const t = data
+            ? (() => {
+                const types = data.coaches
+                    .filter(coach => coach.carType === type)
+                    .map(coach => coach.freePlaces)
+                    .flat()
+                    .map(place => place.type);
+                const noDuplicates = [...new Set(types)]
+
+                return noDuplicates.length === 1 ? noDuplicates : ["All"].concat(noDuplicates);
+            })()
+            : [];
+        setPlaceTypes(t);
+        setPlace(t[0]);
+    }, [type]);
+
     return (<div
         className="text-black fixed inset-0 bg-black bg-opacity-50 flex justify-center z-50">
         <div
             ref={modalRef}
             className="bg-white rounded-2xl w-[1000px] min-w-[1000px] h-[90vh] z-50 overflow-hidden mt-[5vh]"
         >
-            <div className="p-6 overflow-y-auto h-[90vh] scroll">
+            <div className="p-6 overflow-y-auto h-[90vh] scroll scrollbar-hide">
                 <div className="">
                     <div className="text-2xl p-2 mb-3 shadow-inner bg-gray-200 rounded-xl">
                         <div className="p-2">
@@ -161,6 +180,29 @@ function Ticket({
                             </div>
                         </div>
                     }
+                    {data &&
+                        <div className="shadow-inner p-2 mb-3 bg-gray-200 rounded-xl">
+                            <div className="text-2xl mb-2">
+                                Тип места
+                            </div>
+                            <div className="flex flex-wrap gap-3">
+                                {placeTypes.map(placeType => (<button
+                                    key={placeType}
+                                    onClick={() => {
+                                        setPlace(placeType);
+                                        console.log(placeType)
+                                    }}
+                                    className={`px-4 py-2 rounded-xl ${place === placeType ? 'bg-[#96dbfa] text-white' : 'bg-gray-200'}`}
+                                >
+                                    <div>
+                                        <span>
+                                            {placeType === "All" ? "Любое" : getPlaceType(placeType)}
+                                        </span>
+                                    </div>
+                                </button>))}
+                            </div>
+                        </div>
+                    }
                 </div>
                 <div
                     className="space-y-[15px]"
@@ -176,15 +218,16 @@ function Ticket({
                     {data && data.coaches
                         .filter(coach => coach.carType === type)
                         .map((coach) => {
-                            coach.minPrice = Math.min(...coach.freePlaces.map(x => x.kopecks)) / 100.0
-                            return coach
-                        })
-                        .map((coach) => {
+                            const places = coach.freePlaces.filter(p => p.type === place || place === "All");
+                            const minPrice = Math.min(...places.map(x => x.kopecks)) / 100.0
+                            if (places.length === 0) {
+                                return null;
+                            }
                             return (
                                 <div className="shadow-inner bg-gray-200 rounded-xl">
                                     <div className="px-5 py-2 text-2xl">
-                                        <span className="font-bold">Вагон {coach.number}</span> {coach.minPrice &&
-                                        <span className="text-xl">от {coach.minPrice}₽</span>}
+                                        <span className="font-bold">Вагон {coach.number}</span> {minPrice &&
+                                        <span className="text-xl">от {minPrice}₽</span>}
                                     </div>
                                     {(() => {
                                         if (coach.schemeName != null) {
@@ -195,14 +238,14 @@ function Ticket({
                                                         <div className="flex justify-center">
                                                             <SvgRenderer
                                                                 rawSvg={rawSvg.svg}
-                                                                places={coach.freePlaces}
+                                                                places={places}
                                                             />
                                                         </div>
                                                     )
                                                 } else {
                                                     return (
                                                         <div className="w-full px-5 py-4">
-                                                            <ListRenderer places={coach.freePlaces}/>
+                                                            <ListRenderer places={places}/>
                                                         </div>
                                                     )
                                                 }
@@ -216,12 +259,12 @@ function Ticket({
                                                                 <div className="text-xl">Этаж 2</div>
                                                                 <SvgRenderer
                                                                     rawSvg={rawSvg2.svg}
-                                                                    places={coach.freePlaces}
+                                                                    places={places}
                                                                 />
                                                                 <div className="text-xl">Этаж 1</div>
                                                                 <SvgRenderer
                                                                     rawSvg={rawSvg1.svg}
-                                                                    places={coach.freePlaces}
+                                                                    places={places}
                                                                 />
                                                             </div>
                                                         </div>
@@ -230,7 +273,7 @@ function Ticket({
                                                     return (
                                                         <div className="flex justify-center">
                                                             <div>
-                                                                <ListRenderer places={coach.freePlaces}/>
+                                                                <ListRenderer places={places}/>
                                                             </div>
                                                         </div>
                                                     )
