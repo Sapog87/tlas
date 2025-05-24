@@ -95,9 +95,9 @@ function Ticket({
             ref={modalRef}
             className="bg-white rounded-2xl w-[1000px] min-w-[1000px] h-[90vh] z-50 overflow-hidden mt-[5vh]"
         >
-            <div className="p-6 overflow-y-auto h-[90vh] scroll scrollbar-hide">
+            <div className="p-5 overflow-y-auto h-[90vh] scroll scrollbar-hide">
                 <div className="">
-                    <div className="text-2xl p-2 mb-3 shadow-inner bg-gray-200 rounded-xl">
+                    <div className="text-2xl p-3 mb-3 shadow-inner bg-gray-200 rounded-xl">
                         <div className="p-2">
                             {trainData.startCity} — {trainData.finishCity}
                         </div>
@@ -161,7 +161,7 @@ function Ticket({
                         </table>
                     </div>
                     {data &&
-                        <div className="shadow-inner p-2 mb-3 bg-gray-200 rounded-xl">
+                        <div className="shadow-inner p-5 mb-3 bg-gray-200 rounded-xl">
                             <div className="text-2xl mb-2">
                                 Тип выгона
                             </div>
@@ -169,7 +169,7 @@ function Ticket({
                                 {coachTypes.map(coachType => (<button
                                     key={coachType}
                                     onClick={() => setType(coachType)}
-                                    className={`px-4 py-2 rounded-xl ${type === coachType ? 'bg-[#96dbfa] text-white' : 'bg-gray-200'}`}
+                                    className={`px-4 py-2 rounded-xl transition ${type === coachType ? 'bg-[#96dbfa] text-white' : 'bg-gray-200'}`}
                                 >
                                     <div>
                                         <span className="capitalize">
@@ -181,7 +181,7 @@ function Ticket({
                         </div>
                     }
                     {data &&
-                        <div className="shadow-inner p-2 mb-3 bg-gray-200 rounded-xl">
+                        <div className="shadow-inner p-5 mb-3 bg-gray-200 rounded-xl">
                             <div className="text-2xl mb-2">
                                 Тип места
                             </div>
@@ -192,7 +192,7 @@ function Ticket({
                                         setPlace(placeType);
                                         console.log(placeType)
                                     }}
-                                    className={`px-4 py-2 rounded-xl ${place === placeType ? 'bg-[#96dbfa] text-white' : 'bg-gray-200'}`}
+                                    className={`px-4 py-2 rounded-xl transition ${place === placeType ? 'bg-[#96dbfa] text-white' : 'bg-gray-200'}`}
                                 >
                                     <div>
                                         <span>
@@ -205,7 +205,7 @@ function Ticket({
                     }
                 </div>
                 <div
-                    className="space-y-[15px]"
+                    className="space-y-[12px]"
                 >
                     {!data &&
                         <div>

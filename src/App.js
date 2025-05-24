@@ -46,7 +46,7 @@ function App() {
             <Helmet>
                 <title>TLAS</title>
             </Helmet>
-            <div className='bg-[#e7e5e5] min-h-full grid'>
+            <div className='min-h-full grid'>
                 <Routes>
                     <Route path='*' element={<Navigate to={'/'}/>}/>
                     <Route path='/' element={
