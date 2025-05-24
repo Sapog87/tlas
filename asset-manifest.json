@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/tlas/static/css/main.e6b1596b.css",
-    "main.js": "/tlas/static/js/main.6d84a790.js",
+    "main.css": "/tlas/static/css/main.c151098b.css",
+    "main.js": "/tlas/static/js/main.411081a5.js",
     "static/js/453.c8c7073c.chunk.js": "/tlas/static/js/453.c8c7073c.chunk.js",
     "index.html": "/tlas/index.html",
-    "main.e6b1596b.css.map": "/tlas/static/css/main.e6b1596b.css.map",
-    "main.6d84a790.js.map": "/tlas/static/js/main.6d84a790.js.map",
+    "main.c151098b.css.map": "/tlas/static/css/main.c151098b.css.map",
+    "main.411081a5.js.map": "/tlas/static/js/main.411081a5.js.map",
     "453.c8c7073c.chunk.js.map": "/tlas/static/js/453.c8c7073c.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.e6b1596b.css",
-    "static/js/main.6d84a790.js"
+    "static/css/main.c151098b.css",
+    "static/js/main.411081a5.js"
   ]
 }
