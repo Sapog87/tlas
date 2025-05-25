@@ -5,9 +5,10 @@ import SearchPage from "./components/SearchPage/SearchPage";
 import {info} from "./api/UserService";
 import LoginSignup from "./components/Auth/LoginSignup";
 import {Helmet} from "react-helmet";
+import Profile from "./components/Profile/Profile";
 
 function App() {
-    const [logged, setLogged] = useState(false);
+    const [logged, setLogged] = useState(null);
     const [user, setUser] = useState(null);
     const [showLoginModal, setShowLoginModal] = useState(false);
 
@@ -19,7 +20,6 @@ function App() {
         } else {
             info(token)
                 .then(response => {
-                    console.log(response);
                     if (response.status === 401 || response.status !== 200) {
                         localStorage.removeItem("token");
                         setLogged(false);
@@ -59,6 +59,14 @@ function App() {
                     }/>
                     <Route path='/search' element={
                         <SearchPage
+                            logged={logged}
+                            setLogged={setLogged}
+                            setShowLoginModal={setShowLoginModal}
+                            user={user}
+                        />
+                    }/>
+                    <Route path='/profile' element={
+                        <Profile
                             logged={logged}
                             setLogged={setLogged}
                             setShowLoginModal={setShowLoginModal}

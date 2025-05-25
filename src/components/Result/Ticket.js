@@ -169,7 +169,7 @@ function Ticket({
                                 {coachTypes.map(coachType => (<button
                                     key={coachType}
                                     onClick={() => setType(coachType)}
-                                    className={`px-4 py-2 rounded-xl transition ${type === coachType ? 'bg-[#96dbfa] text-white' : 'bg-gray-200'}`}
+                                    className={`px-4 py-2 rounded-xl transition ${type === coachType ? 'bg-[#96dbfa] text-white shadow-inner' : 'bg-gray-200'}`}
                                 >
                                     <div>
                                         <span className="capitalize">
@@ -192,7 +192,7 @@ function Ticket({
                                         setPlace(placeType);
                                         console.log(placeType)
                                     }}
-                                    className={`px-4 py-2 rounded-xl transition ${place === placeType ? 'bg-[#96dbfa] text-white' : 'bg-gray-200'}`}
+                                    className={`px-4 py-2 rounded-xl transition ${place === placeType ? 'bg-[#96dbfa] text-white shadow-inner' : 'bg-gray-200'}`}
                                 >
                                     <div>
                                         <span>

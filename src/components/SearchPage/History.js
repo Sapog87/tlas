@@ -3,10 +3,7 @@ import {favorite, history, removeHistory} from "../../api/SearchHistoryService";
 import Skeleton from "react-loading-skeleton";
 
 function History({
-                     setFrom,
-                     setTo,
-                     setFromInput,
-                     setToInput,
+                     callback,
                  }) {
     const [searchHistory, setSearchHistory] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -66,10 +63,7 @@ function History({
                         >
                             <div className="truncate"
                                  onClick={() => {
-                                     setTo({"code": item.to, "title": item.toTitle});
-                                     setFrom({"code": item.from, "title": item.fromTitle});
-                                     setToInput(item.toTitle)
-                                     setFromInput(item.fromTitle)
+                                     callback(item)
                                  }}
                             >
                                 {item.fromTitle} — {item.toTitle}

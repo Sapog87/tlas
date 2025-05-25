@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 
-function ProgressBar({loading}) {
+function ProgressBar({ loading }) {
     const [progress, setProgress] = useState(0);
 
     useEffect(() => {
@@ -8,7 +8,6 @@ function ProgressBar({loading}) {
 
         if (loading) {
             setProgress(0);
-
             interval = setInterval(() => {
                 setProgress((prev) => {
                     if (prev < 90) {
@@ -27,11 +26,11 @@ function ProgressBar({loading}) {
     }, [loading]);
 
     return (
-        <div className="w-full h-1 bg-gray-200 rounded">
+        <div className="w-full h-1 overflow-hidden">
             <div
-                className="h-full bg-[#96dbfa] transition-all duration-300"
+                className="h-full bg-[#96dbfa] transition-transform duration-300 origin-center"
                 style={{
-                    width: `${progress}%`
+                    transform: `scaleX(${progress / 100})`
                 }}
             />
         </div>

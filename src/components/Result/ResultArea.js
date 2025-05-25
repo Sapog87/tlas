@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useReducer, useState} from 'react';
 import Route from "./Route";
 import Transfer from "./Transfer";
 import TrainIcon from "../Icon/TrainIcon";
@@ -8,11 +8,35 @@ import {motion} from "framer-motion";
 import Ticket from "./Ticket";
 import {calculateTimeDifferenceFormated, formatDateWithoutOffset} from "../../Utils";
 import BusIcon from "../Icon/BusIcon";
+import {saveRoute} from "../../api/UserService";
 
-function ResultArea({data}) {
+function ResultArea({data, logged}) {
     const [showModal, setShowModal] = useState(false);
     const [request, setRequest] = useState({});
     const [trainData, setTrainData] = useState({});
+    const [globallyDisabled, setGloballyDisabled] = useState(false);
+    const [, forceUpdate] = useReducer(x => x + 1, 0);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setGloballyDisabled(true);
+        }, 10 * 60 * 1000);
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    const handleClick = (event, index) => {
+        saveRoute(data[index].key)
+            .then(response => {
+                if (response.status === 200) {
+                    data[index]["isSaved"] = true;
+                    forceUpdate()
+                }
+            })
+            .catch((e) => {
+                console.error(e);
+            })
+    };
 
     return (
         <div className="cursor-default">
@@ -44,7 +68,7 @@ function ResultArea({data}) {
                     </div>
                 </div>
             )}
-            {data && data.length > 0 && data.map((item) => (
+            {data && data.length > 0 && data.map((item, index) => (
                 <motion.div
                     initial={{opacity: 0, y: 20}}
                     animate={{opacity: 1, y: 0}}
@@ -152,50 +176,72 @@ function ResultArea({data}) {
                                 }
                             })()}
                         </div>
-                        <div>
-                            {item.segments.map((segment, index) => {
-                                const nextSegment = item.segments[index + 1];
-                                const currentRoute = (
-                                    <Route
-                                        transport={segment.transport}
-                                        raceNumber={segment.raceNumber}
-                                        carrier={segment.carrier}
-                                        startDateTime={segment.startDateTime}
-                                        startStation={segment.startStation}
-                                        startCity={segment.startCity}
-                                        finishDateTime={segment.finishDateTime}
-                                        finishStation={segment.finishStation}
-                                        finishCity={segment.finishCity}
-                                        products={segment.products}
-                                        vehicle={segment.vehicle}
-                                        setShowModal={setShowModal}
-                                        setRequest={setRequest}
-                                        setTrainData={setTrainData}
-                                        originCode={segment.originCode}
-                                        destinationCode={segment.destinationCode}
-                                    />
-                                );
-
-                                const transfer =
-                                    nextSegment && (
-                                        <Transfer
-                                            startStation={segment.finishStation}
-                                            finishStation={nextSegment.startStation}
-                                            startDateTime={segment.finishDateTime}
-                                            finishDateTime={nextSegment.startDateTime}
-                                            fromTransport={segment.transport}
-                                            toTransport={nextSegment.transport}
-                                        />
-                                    );
-
-                                return (
+                        {(() => {
+                            return (
+                                <>
                                     <div>
-                                        {currentRoute}
-                                        {transfer}
+                                        {item.segments.map((segment, index) => {
+                                            const nextSegment = item.segments[index + 1];
+                                            const currentRoute = (
+                                                <Route
+                                                    transport={segment.transport}
+                                                    raceNumber={segment.raceNumber}
+                                                    carrier={segment.carrier}
+                                                    startDateTime={segment.startDateTime}
+                                                    startStation={segment.startStation}
+                                                    startCity={segment.startCity}
+                                                    finishDateTime={segment.finishDateTime}
+                                                    finishStation={segment.finishStation}
+                                                    finishCity={segment.finishCity}
+                                                    products={segment.products}
+                                                    vehicle={segment.vehicle}
+                                                    setShowModal={setShowModal}
+                                                    setRequest={setRequest}
+                                                    setTrainData={setTrainData}
+                                                    originCode={segment.originCode}
+                                                    destinationCode={segment.destinationCode}
+                                                />
+                                            );
+
+                                            const transfer =
+                                                nextSegment && (
+                                                    <Transfer
+                                                        startStation={segment.finishStation}
+                                                        finishStation={nextSegment.startStation}
+                                                        startDateTime={segment.finishDateTime}
+                                                        finishDateTime={nextSegment.startDateTime}
+                                                        fromTransport={segment.transport}
+                                                        toTransport={nextSegment.transport}
+                                                    />
+                                                );
+
+                                            return (
+                                                <div>
+                                                    {currentRoute}
+                                                    {transfer}
+                                                </div>
+                                            );
+                                        })}
                                     </div>
-                                );
-                            })}
-                        </div>
+                                    {logged && (
+                                        <div className="">
+                                            <button
+                                                className="w-full mt-2 bg-[#a1ddf7] text-white px-6 py-1 rounded-xl hover:bg-[#6ecdfa] disabled:bg-blue-200 disabled:cursor-not-allowed"
+                                                onClick={(event) => handleClick(event, index)}
+                                                disabled={globallyDisabled || item["isSaved"] === true}
+                                            >
+                                                {globallyDisabled === true
+                                                    ? item["isSaved"] === true
+                                                        ? "Сохранено" : "Сохранить"
+                                                    : item["isSaved"] === true
+                                                        ? "Сохранено" : "Сохранить"
+                                                }
+                                            </button>
+                                        </div>
+                                    )}
+                                </>
+                            )
+                        })()}
                     </div>
                 </motion.div>
             ))}

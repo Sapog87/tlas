@@ -139,7 +139,6 @@ function Search({
                         getNode(toQuery).catch(() => setNetworkError(true))
                     ]).finally(() => setLoading(false));
 
-                    console.log(_date, dateOnly);
                     if (from.status === 200 && to.status === 200 && !isNaN(_date) && _date >= dateOnly && _date <= addDays(dateOnly, 90)) {
                         const fromJson = await from.json();
                         setFrom({"code": fromJson.id, "title": fromJson.title});
@@ -403,7 +402,7 @@ function Search({
                 }
             </div>
             <button
-                className="p-[15px] bg-[#96dbfa] text-white border-none rounded-[15px] ml-[10px] text-[20px] hover:bg-[#5fccff]"
+                className="p-[15px] bg-[#a1ddf7] text-white border-none rounded-[15px] ml-[10px] text-[20px] hover:bg-[#6ecdfa]"
                 onClick={handleSearch}>
                 Найти
             </button>

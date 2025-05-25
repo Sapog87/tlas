@@ -28,6 +28,13 @@ function EmptySearchPage({
         navigate(`/search?${params.toString()}`)
     }
 
+    const handleHistoryCallback = (item) => {
+        setTo({"code": item.to, "title": item.toTitle});
+        setFrom({"code": item.from, "title": item.fromTitle});
+        setToInput(item.toTitle)
+        setFromInput(item.fromTitle)
+    }
+
     return (
         <div className="static h-[300px]">
             <Header
@@ -57,7 +64,7 @@ function EmptySearchPage({
                 />
             </div>
             <div className="relative flex justify-center gap-10 py-20">
-                <div className="bg-white p-5 w-[450px] h-[350px] rounded-2xl shadow-[10px_10px_10px_#d4d4d4]">
+                <div className="bg-white p-5 w-[450px] h-min-[350px] rounded-2xl shadow-[10px_10px_10px_#d4d4d4]">
                     {logged && (
                         <div>
                             <div className="font-bold mb-2 text-xl flex items-center gap-2">
@@ -65,6 +72,7 @@ function EmptySearchPage({
                             </div>
                             <hr/>
                             <History
+                                callback={handleHistoryCallback}
                                 setTo={setTo}
                                 setFrom={setFrom}
                                 setToInput={setToInput}
@@ -106,7 +114,6 @@ function EmptySearchPage({
                 </div>
             </div>
             <Footer/>
-            <ReactSVG src="https://ticket.rzd.ru/api/v1/carscheme/image/325/PcFirstStorey"/>
         </div>
     );
 }
